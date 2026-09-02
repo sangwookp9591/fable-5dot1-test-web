@@ -58,6 +58,8 @@ export function WorkLoop() {
           </div>
         </div>
         <div className="panel loop-right">
+          {/* 좁은 화면에서는 지금 단계만 보여주므로 몇 번째인지 숫자로 알려준다 */}
+          <p className="step-count" aria-hidden="true">{step + 1} / {quality.steps.length}</p>
           <ol className="steps" aria-label="단계">
             {quality.steps.map((s, i) => (
               <li key={s.id} className={`step ${i < step ? "done" : i === step ? "now" : "todo"}`} aria-current={i === step ? "step" : undefined}>

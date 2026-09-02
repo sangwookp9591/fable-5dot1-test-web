@@ -90,6 +90,8 @@ export const zivo = {
       { k: "판단", t: "언어를 주소에 포함", d: "쿠키에만 저장하지 않고 언어 자체를 URL 구조에 넣었습니다." },
       { k: "결과", t: "색인과 캐시를 분리", d: "각 언어가 고유 주소를 갖고 검색과 CDN 정책도 따로 움직입니다." },
     ],
+    /* 비교 카드 대신 슬라이더 아래 한 줄로 보여주는 캡션 */
+    caption: { before: "쿠키 1개 주소", after: "/ko · /en … 14개 URL" },
     before: { k: "BEFORE", t: "쿠키에만 언어 저장", d: "주소 1개 · 언어별 색인 어려움" },
     after: { k: "AFTER", t: "/ko · /en · /ja · /zh · …", d: "14개 URL · 색인과 캐시 분리" },
     langs: ["ko", "en", "ja", "zh", "zh-tw", "th", "vi", "id", "ms", "es", "fr", "de", "ru", "ar"],

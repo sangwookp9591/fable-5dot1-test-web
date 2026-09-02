@@ -79,8 +79,8 @@ export function StudioTour() {
           </div>
           <div key={stop.id}>
             <p className="eyebrow">{stop.eyebrow}</p>
-            <h2 className="h-section" style={{ fontSize: "clamp(20px, 2.2vw, 28px)" }}>{stop.title}</h2>
-            <p className="lead" style={{ fontSize: 14, marginBottom: 6 }}>{stop.body}</p>
+            <h2 className="h-section">{stop.title}</h2>
+            <p className="lead" style={{ marginBottom: 8 }}>{stop.body}</p>
             <ul className="tour-points">
               {stop.points.map((p) => (
                 <li key={p.t}>
@@ -93,7 +93,7 @@ export function StudioTour() {
               <div className="split" aria-label="구조 변화">
                 <div className="box bad">
                   {zivo.backend.before.t}
-                  <div style={{ fontSize: 11, fontWeight: 400, color: "var(--muted)", marginTop: 4 }}>{zivo.backend.before.sub}</div>
+                  <small>{zivo.backend.before.sub}</small>
                 </div>
                 <span aria-hidden="true">→</span>
                 <div className="cols">

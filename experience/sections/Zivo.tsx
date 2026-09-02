@@ -66,7 +66,8 @@ export function Zivo() {
         <h2 className="h-section">{zivo.title}</h2>
         <p className="lead" style={{ marginBottom: 8 }} hidden={view === 1}>{zivo.body}</p>
 
-        <div className="stats" role="list" aria-label="ZIVO 숫자" data-compact={view === 1 ? "" : undefined}>
+        {/* 2단계에서는 감추되 DOM 에는 남긴다 — 스크롤 카운트업이 같은 ref 를 계속 쓴다 */}
+        <div className="stats" role="list" aria-label="ZIVO 숫자" hidden={view === 1}>
           {zivo.stats.map((s, i) => (
             <div className="stat" role="listitem" key={s.label} ref={(el) => { barRefs.current[i] = el; }}>
               <div className="stat-v">
@@ -79,13 +80,13 @@ export function Zivo() {
           ))}
         </div>
 
-        <p className="lead" style={{ fontSize: 14, margin: "14px 0 0" }} hidden={view === 1}>
+        <p className="lead" style={{ fontSize: 14, margin: "12px 0 0" }} hidden={view === 1}>
           {zivo.quote.t} {zivo.quote.d}
         </p>
 
         <div className={`i18n ${view ? "on" : ""}`} aria-live="off" hidden={view === 0}>
-          <p className="eyebrow" style={{ marginTop: 18 }}>{zivo.i18n.eyebrow}</p>
-          <h3 className="h-section" style={{ fontSize: "clamp(18px, 1.7vw, 22px)", marginBottom: 8 }}>{zivo.i18n.title}</h3>
+          <p className="eyebrow">{zivo.i18n.eyebrow}</p>
+          <h3 className="h-section">{zivo.i18n.title}</h3>
           <p className="lead" style={{ fontSize: 14, marginBottom: 8 }}>{zivo.i18n.body}</p>
 
           <div className="urlbar" aria-hidden="true">
@@ -115,23 +116,12 @@ export function Zivo() {
             aria-valuetext={value < 0.5 ? zivo.i18n.before.t : zivo.i18n.after.t}
             style={{ ["--t" as string]: value }}
           />
-          <div className="slider-labels" aria-hidden="true">
-            <span>{zivo.i18n.before.k}</span>
-            <span>{zivo.i18n.after.k}</span>
-          </div>
-
-          <div className="i18n-track">
-            <div className={`i18n-side ${value < 0.5 ? "active" : "dim"}`}>
-              <div className="k">{zivo.i18n.before.k}</div>
-              <div className="t">{zivo.i18n.before.t}</div>
-              <div className="d">{zivo.i18n.before.d}</div>
-            </div>
-            <div className={`i18n-side ${value >= 0.5 ? "active" : "dim"}`}>
-              <div className="k">{zivo.i18n.after.k}</div>
-              <div className="t">{zivo.i18n.after.t}</div>
-              <div className="d">{zivo.i18n.after.d}</div>
-            </div>
-          </div>
+          {/* 비교 카드 2개 대신 한 줄 캡션 */}
+          <p className="i18n-cap">
+            {zivo.i18n.caption.before}
+            <i aria-hidden="true">→</i>
+            <b>{zivo.i18n.caption.after}</b>
+          </p>
           <a className="btn btn-ghost" href={zivo.userWeb.link} target="_blank" rel="noreferrer" style={{ marginTop: 6 }}>
             {zivo.userWeb.linkLabel} ↗
           </a>

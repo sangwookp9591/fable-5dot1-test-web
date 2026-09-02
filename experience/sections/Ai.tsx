@@ -13,21 +13,23 @@ export function Ai() {
           <p className="eyebrow">{ai.eyebrow}</p>
           <h2 className="h-section">{ai.title}</h2>
           <p className="lead">{ai.body}</p>
-          <div className="cards">
+          <ul className="ai-list">
             {ai.cards.map((c, i) => (
-              <div key={c.t} className={`card reveal ${step >= 1 ? "on" : ""}`} style={{ ["--i" as string]: i }}>
+              <li key={c.t} className={`reveal ${step >= 1 ? "on" : ""}`} style={{ ["--i" as string]: i }}>
                 <b>{c.t}</b>
                 <p>{c.d}</p>
-              </div>
+              </li>
             ))}
-          </div>
-          <div className="chips" aria-label="순서">
+          </ul>
+          {/* 순서 칩 4개 → 화살표로 이은 한 문장 */}
+          <p className="ai-loop">
             {ai.loop.map((l, i) => (
-              <span key={l} className={step >= 2 || i === 0 ? "on" : ""} style={{ transitionDelay: `${i * 80}ms` }}>
+              <span key={l}>
+                {i > 0 ? <i aria-hidden="true">→</i> : null}
                 {l}
               </span>
             ))}
-          </div>
+          </p>
           <div className="site-note">
             <b>{ai.thisSite.t}</b>
             {ai.thisSite.d}

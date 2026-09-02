@@ -57,12 +57,12 @@
   margin: 0 auto;
 }
 /* 콘텐츠 열: 아잉이 서는 반대편에 둔다 */
-.col-left { width: min(100%, 620px); }
-.col-right { width: min(100%, 620px); margin-left: auto; }
+.col-left { width: 100%; }
+.col-right { width: 100%; margin-left: auto; }
 
 /* ── Panel: 종이 느낌 카드 (배경 3D 위에서 가독성 확보) ── */
 .panel {
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  background: color-mix(in srgb, var(--paper) 93%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
@@ -71,7 +71,13 @@
   box-shadow: 0 12px 40px -24px rgba(23, 36, 58, 0.35);
 }
 
-/* ── Type ── */
+/* 데스크톱: 패널이 화면 절반을 넘지 않게 → 반대편 3D 가 그대로 보인다 */
+@media (min-width: 901px) {
+  .panel { max-width: min(600px, 46vw); }
+  .col-left, .col-right { width: min(600px, 46vw); max-width: min(600px, 46vw); }
+}
+
+/* ── Type: 4단계만 쓴다 (eyebrow 12 · lead 16 · h-section · h-display) ── */
 .eyebrow {
   font-size: 12px;
   letter-spacing: 0.12em;
@@ -83,7 +89,7 @@
 /* 사람 이름처럼 대문자로 바꾸면 안 되는 줄 */
 .eyebrow.plain { text-transform: none; letter-spacing: 0.02em; }
 .h-display {
-  font-size: clamp(30px, 4.6vw, 62px);
+  font-size: clamp(32px, 3.4vw, 48px);
   line-height: 1.12;
   letter-spacing: -0.02em;
   font-weight: 800;
@@ -91,16 +97,16 @@
   color: var(--ink);
 }
 .h-section {
-  font-size: clamp(24px, 3.2vw, 40px);
+  font-size: clamp(22px, 2.4vw, 32px);
   line-height: 1.18;
   letter-spacing: -0.02em;
   font-weight: 800;
   margin: 0 0 14px;
 }
 .lead {
-  font-size: clamp(15px, 1.25vw, 18px);
-  line-height: 1.65;
-  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--body);
   margin: 0 0 20px;
 }
 .big-num {
@@ -160,7 +166,7 @@
   border-radius: 16px;
   padding: 8px 14px;
   font-weight: 700;
-  font-size: clamp(14px, 1.1vw, 17px);
+  font-size: 14px;
   box-shadow: 3px 3px 0 var(--ink);
   animation: bubble-in var(--dur-base) var(--ease-out) both;
   position: relative;
@@ -260,7 +266,7 @@
   border: 0;
   background: transparent;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--ink);
   text-decoration: none;
@@ -273,7 +279,7 @@
   .contact-bar { top: 10px; right: 10px; }
   /* 좁은 화면에서는 연락 수단만 남긴다 */
   .contact-bar .contact-name, .contact-bar .contact-top { display: none; }
-  .contact-bar > * { padding: 0 12px; font-size: 12.5px; }
+  .contact-bar > * { padding: 0 12px; font-size: 12px; }
 }
 
 /* ── Scroll hint ── */
@@ -283,7 +289,7 @@
   bottom: 18px;
   transform: translateX(-50%);
   z-index: 35;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
   display: flex;
   align-items: center;
@@ -303,8 +309,13 @@
 /* ── Mobile ── */
 @media (max-width: 900px) {
   .stage { align-items: start; padding-top: 48px; padding-bottom: 88px; }
-  .col-left, .col-right { width: 100%; margin-left: 0; }
-  .panel { padding: 18px; border-radius: 16px; }
+  .col-left, .col-right { width: 100%; max-width: none; margin-left: 0; }
+  .panel { padding: 18px; border-radius: 20px; max-width: none; }
+  /* 모바일: 제목 30px · 본문 16px */
+  .h-display { font-size: 30px; }
+  .h-section { font-size: 24px; }
+  .lead { font-size: 16px; line-height: 1.55; }
+  .btn { min-height: 52px; }
 }
 
 .scene-canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 600ms var(--ease-out); }
@@ -318,28 +329,24 @@
 @media (min-width: 901px) and (max-height: 820px) {
   .stage { padding-top: 48px; padding-bottom: 16px; }
   .panel { padding: 18px 22px; }
-  .h-section { font-size: clamp(20px, 2.4vw, 28px); margin-bottom: 8px; }
+  .h-section { font-size: 22px; margin-bottom: 8px; }
+  .h-display { font-size: 32px; }
   .lead { font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
   .eyebrow { margin-bottom: 6px; }
-  .intro-copy.panel .h-display { font-size: clamp(28px, 3.2vw, 40px); }
-  .intro-summary { font-size: 15px; margin-bottom: 8px; }
+  .intro-summary { font-size: 14px; margin-bottom: 8px; }
+  .intro-points { margin-bottom: 14px; }
   .board-row { padding: 9px 0; }
-  .stat { padding: 10px 12px 10px; }
+  .stats { margin: 12px 0 6px; }
   .stat-v { font-size: 28px; }
-  .cards { gap: 8px; margin: 8px 0; }
-  .card { padding: 10px 12px; }
-  .card p { font-size: 12.5px; }
-  .site-note { margin-top: 8px; padding: 10px 12px; font-size: 13px; }
-  .review-board li { padding: 8px 10px; font-size: 13px; }
-  .review-board small { font-size: 11.5px; }
-  .vital { padding: 6px 10px; }
-  .vital .v { font-size: 18px; }
+  .ai-list li { padding: 7px 0; }
+  .ai-list p { font-size: 12px; }
+  .site-note { margin-top: 8px; font-size: 12px; }
+  .review-board li { padding: 6px 0; }
+  .review-board small { display: none; }
   .review-panel .note { display: none; }
   .result .intro-points { display: none; }
-  .result .h-display { font-size: clamp(26px, 3.4vw, 40px); }
   .result-board { margin: 10px auto; }
-  .result-board > div { padding: 8px 12px; }
-  .loop-left .terminal { min-height: 160px; font-size: 12.5px; }
+  .result-board > div { padding: 6px 0; }
+  .loop-left .terminal { min-height: 150px; }
   .step { padding: 8px 12px; }
-  .step .d { font-size: 12px; }
 }

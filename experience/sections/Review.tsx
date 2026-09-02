@@ -49,11 +49,12 @@ export function Review() {
           <ul className="review-board">
             {REVIEW_ITEMS.map((r) => (
               <li key={r.k}>
-                <div>
-                  {r.k}
-                  <small>{r.d}</small>
+                <div className="r">
+                  <span>{r.k}</span>
+                  <i className="dots" aria-hidden="true" />
+                  <span className={`s ${r.s.replace("-", "")}`}>{r.s}</span>
                 </div>
-                <span className={`s ${r.s.replace("-", "")}`}>{r.s}</span>
+                <small>{r.d}</small>
               </li>
             ))}
           </ul>
