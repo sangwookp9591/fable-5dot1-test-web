@@ -173,29 +173,112 @@
 @media (max-width: 640px) { .review-board { grid-template-columns: 1fr; } }
 
 /* ── Mobile compaction ── */
+/* 375×667 기준 예산: 667 − 48(위 여백) − 88(아잉 자리) ≈ 530px 안에 한 섹션이 들어가야 한다 */
 @media (max-width: 900px) {
-  .stage { padding-top: 56px; padding-bottom: 120px; }
-  .h-section { font-size: clamp(21px, 6vw, 26px); }
+  .stage { padding-top: 48px; padding-bottom: 88px; }
+  .h-section { font-size: clamp(21px, 6vw, 26px); margin-bottom: 8px; }
   .lead { font-size: 14px; line-height: 1.55; margin-bottom: 12px; }
+  .eyebrow { margin-bottom: 8px; }
+
+  /* Career: 설명·펼침 문구는 접고 연도 · 회사 · 태그만 남긴다 */
+  .board { margin: 6px 0 10px; }
+  .board-row { grid-template-columns: auto 1fr; gap: 2px 10px; padding: 8px 0; align-items: baseline; }
+  .board-years { font-size: 12.5px; padding-top: 0; }
+  .board-company { font-size: 15px; }
+  .board-desc { display: none; }
+  .board-more { display: none; }
+  .board-tags { grid-column: 2; flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .board-scope { font-size: 13px; }
+
+  /* Zivo: 숫자판은 2열, i18n 소개 문단·머리말은 접는다 */
+  .stats[data-compact] { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .stats[data-compact] .stat-l { font-size: 10.5px; line-height: 1.3; }
+  .i18n { margin-top: 8px; }
+  .i18n .eyebrow { display: none; }
+  .i18n > .lead { display: none; }
+  .i18n > .h-section { font-size: 17px !important; margin-bottom: 6px; }
+  .urlbar { font-size: 12px; padding: 6px 10px; margin: 4px 0 6px; }
+  .langs { gap: 5px; min-height: 0; }
+  .langs span { font-size: 11px; padding: 3px 7px; }
+  .i18n-track { gap: 8px; margin-bottom: 8px; }
+  .i18n-side { padding: 6px 9px; }
+  .i18n-side .k { font-size: 10px; }
+  .i18n-side .t { font-size: 13.5px; margin: 3px 0 2px; }
+  .i18n-side .d { font-size: 11.5px; line-height: 1.35; }
+
+  /* Loop: 터미널과 단계 카드 압축 */
   .loop-left .lead { display: none; }
-  .loop-left .terminal { min-height: 120px; font-size: 12px; padding: 10px 12px 12px; }
+  .loop-left .terminal { min-height: 96px; font-size: 11.5px; padding: 10px 12px 12px; }
   .loop-right { padding: 10px; }
-  .step { padding: 8px 10px; gap: 8px; grid-template-columns: 28px 1fr; }
+  .step { padding: 6px 10px; gap: 8px; grid-template-columns: 28px 1fr; }
   .step .k { width: 28px; height: 28px; font-size: 10px; }
-  .step .t { font-size: 14px; }
+  .step .t { font-size: 13px; }
   .step .d { display: none; }
-  .step.now .d { display: block; font-size: 12.5px; }
+  .step.now .d { display: block; font-size: 12px; }
   .loop-layout { gap: 10px; }
+
+  /* Studio */
   .tour-card .lead { display: none; }
   .tour-points li { font-size: 13px; }
+  /* 손가락으로 누르는 탭이라 44px 아래로 내리지 않는다 */
+  .tour-stops button { min-height: 44px; }
+
+  /* AI: 소개 문단은 접고 카드·칩·메모를 압축 */
+  #ai .lead { display: none; }
+  .cards { gap: 8px; margin: 6px 0; }
+  .card { padding: 6px 10px; }
+  .card b { font-size: 13.5px; line-height: 1.3; margin-bottom: 2px; }
+  /* 카드 설명은 두 줄까지만 — 세로 예산 안에 4장을 모두 남기기 위해 */
+  .card p { font-size: 12px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .chips { font-size: 11.5px; gap: 4px; }
+  .chips span { padding: 4px 9px; }
+  .site-note { font-size: 12px; line-height: 1.45; padding: 8px 10px; margin-top: 6px; }
+
+  /* Review */
   .review-panel .lead { display: none; }
-  .review-board li { padding: 8px 10px; font-size: 13px; }
+  .review-panel .note { display: none; }
+  .review-board { gap: 6px; }
+  .review-board li { padding: 6px 10px; font-size: 13px; }
   .review-board small { display: none; }
-  .result .h-display { font-size: clamp(26px, 7.5vw, 34px); }
-  .result-board { gap: 8px; }
-  .result-board > div { padding: 8px 10px; }
-  .result-board .v { font-size: 14px; }
+  .review-board .s { font-size: 11px; padding: 3px 8px; }
+  .vitals { gap: 6px; }
+  .vital { padding: 6px 8px; }
+  .vital .k { font-size: 10.5px; }
+  .vital .v { font-size: 17px; }
+
+  /* Result */
+  .result .h-display { font-size: clamp(26px, 7.5vw, 34px); margin-bottom: 10px; }
+  .result-board { gap: 6px; margin: 10px auto; }
+  .result-board > div { padding: 6px 10px; }
+  .result-board .k { font-size: 11px; }
+  .result-board .v { font-size: 12.5px; line-height: 1.35; }
   .result .intro-points { display: none; }
+  .result-actions { gap: 8px; margin-top: 10px; }
+  /* 터치 영역은 44px 아래로 내리지 않는다 */
+  .result-actions .btn { min-height: 44px; font-size: 13.5px; padding: 0 14px; gap: 6px; }
+  .result-foot { font-size: 10.5px; line-height: 1.5; margin-top: 10px; }
+
+  /* Intro: 첫 화면도 잘리지 않게 */
+  .intro-copy.panel .h-display { font-size: clamp(26px, 7.4vw, 32px); margin-bottom: 12px; }
+  .intro-copy .lead { font-size: 13.5px; margin-bottom: 10px; }
+  .intro-points { gap: 6px; margin-bottom: 14px; }
+  .intro-points li { font-size: 13.5px; line-height: 1.45; }
+  .intro-actions { gap: 8px; margin-bottom: 12px; }
+  .intro-name { font-size: 12px; }
+}
+
+/* ── 세로가 넉넉한 폰(390×844 등) ── */
+/* 375×667 예산에 맞추느라 접었던 설명을, 세로 780px 이상에서는 다시 보여준다 */
+@media (max-width: 900px) and (min-height: 780px) {
+  .board-desc { display: block; font-size: 12.5px; line-height: 1.45; }
+  .loop-left .lead { display: block; }
+  .loop-left .terminal { min-height: 140px; font-size: 12px; }
+  .step .d { display: block; }
+  .tour-card .lead { display: block; }
+  #ai .lead { display: block; }
+  .card p { -webkit-line-clamp: 3; }
+  .i18n > .lead { display: block; }
+  .review-panel .lead { display: block; }
+  .review-panel .note { display: block; }
   .result-foot { font-size: 11.5px; }
-  .intro-copy .lead { font-size: 14px; }
 }

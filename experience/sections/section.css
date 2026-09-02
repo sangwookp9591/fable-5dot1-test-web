@@ -257,7 +257,7 @@
 
 /* ── Mobile ── */
 @media (max-width: 900px) {
-  .stage { align-items: start; padding-top: 72px; padding-bottom: 180px; }
+  .stage { align-items: start; padding-top: 48px; padding-bottom: 88px; }
   .col-left, .col-right { width: 100%; margin-left: 0; }
   .panel { padding: 18px; border-radius: 16px; }
 }
