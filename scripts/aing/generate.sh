@@ -17,4 +17,8 @@ grep -v '^#' "$(dirname "$0")/clips.tsv" | while IFS=$'\t' read -r name dur star
     --wait --wait-timeout 25m --json > "$OUT/$name.json" 2> "$OUT/$name.err" &
   sleep 1.5
 done
-wait_pids=$(jobs -p); echo "launched: $wait_pids"
+# 백그라운드 job 이 모두 끝날 때까지 기다리고, 하나라도 실패하면 1 로 종료
+fail=0
+for pid in $(jobs -p); do wait "$pid" || fail=1; done
+[ "$fail" -eq 0 ] || { echo "일부 생성 job 이 실패했습니다."; exit 1; }
+echo "모든 생성 job 완료"

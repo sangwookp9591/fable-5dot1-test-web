@@ -203,7 +203,7 @@
 | 20 hover 전용 상세·36px 탭 | 반영 | 경력 행 tabIndex, 투어 탭 44px |
 | 21 영어 eyebrow | 반영 | 전부 한국어로 |
 | 22 죽은 상태 | 반영 | soundOn/toggleSound, velocity, camera 필드 제거 |
-| 23 생성 스크립트 부분 성공 | 보류 | 에셋 생성은 끝났고 재실행 계획 없음. README 에 주의 표기 |
+| 23 생성 스크립트 부분 성공 | 반영 | `process_all.sh` 는 webm·mov·png 세 산출물을 모두 확인하고, 실패·malformed job 은 종료 코드 1. `generate.sh` 는 백그라운드 job 을 `wait` 로 회수 |
 
 시각 디자인 리뷰(스크린샷 첨부 2차)는 아래에 이어 붙인다.
 
