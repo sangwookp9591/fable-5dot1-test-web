@@ -17,7 +17,7 @@ export function Intro() {
 
   return (
     <Section id="intro" label="소개" className="intro">
-      <div className="col-left intro-copy kr">
+      <div className="col-left intro-copy kr panel">
         <p className="eyebrow">{hero.eyebrow} · {profile.period}</p>
         <h1 className="h-display" id="intro-title">
           {hero.title[0]}

@@ -1,9 +1,10 @@
 "use client";
 
-import { Component, useEffect, useRef, type ReactNode } from "react";
+import { Component, useCallback, useEffect, useRef, type ReactNode } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Room } from "./Room";
+import { preloadModels } from "./Model";
 import { resolveCamera } from "./camera";
 import { progress, useExperience, SECTIONS } from "@/experience/state/experience-store";
 
@@ -80,19 +81,17 @@ function CameraRig() {
   return null;
 }
 
-/** 첫 프레임이 그려진 뒤 살짝 페이드인 (레이아웃 점프 없이) */
-function FadeIn({ el }: { el: React.RefObject<HTMLDivElement | null> }) {
-  useEffect(() => {
-    const id = requestAnimationFrame(() => el.current?.classList.add("on"));
-    return () => cancelAnimationFrame(id);
-  }, [el]);
-  return null;
-}
-
 export function StudioScene() {
   const failScene = useExperience((s) => s.failScene);
   const mobile = useExperience((s) => s.caps.mobile);
   const wrap = useRef<HTMLDivElement>(null);
+  const onReady = useCallback(() => {
+    // 모델까지 다 올라온 다음 페이드인 (가구가 하나씩 튀어나오지 않게)
+    requestAnimationFrame(() => wrap.current?.classList.add("on"));
+  }, []);
+  useEffect(() => {
+    preloadModels();
+  }, []);
   return (
     <div ref={wrap} className="scene-canvas">
       <SceneBoundary onError={failScene}>
@@ -101,22 +100,48 @@ export function StudioScene() {
           dpr={mobile ? [1, 1] : [1, 1.5]}
           camera={{ position: [2.3, 1.75, 3.4], fov: 42, near: 0.1, far: 30 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance", stencil: false }}
-          onCreated={({ gl, scene }) => {
+          shadows={mobile ? false : "soft"}
+          onCreated={({ gl, scene, invalidate }) => {
             gl.setClearColor("#f6f1e8");
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.05;
             scene.fog = new THREE.Fog("#f6f1e8", 6, 12);
+            // WebGL context 유실: 복구를 기다리고, 3초 안에 못 돌아오면 정적 배경으로
+            let lostTimer: number | null = null;
+            gl.domElement.addEventListener("webglcontextlost", (e) => {
+              e.preventDefault();
+              lostTimer = window.setTimeout(() => failScene(), 3000);
+            });
+            gl.domElement.addEventListener("webglcontextrestored", () => {
+              if (lostTimer) window.clearTimeout(lostTimer);
+              lostTimer = null;
+              invalidate();
+            });
           }}
           style={{ position: "absolute", inset: 0 }}
         >
-          <hemisphereLight args={["#fff6ea", "#b39c86", 0.85]} />
-          <directionalLight position={[-3.5, 2.6, 0.4]} intensity={1.6} color="#ffe9d2" />
-          <directionalLight position={[2.5, 3, 3]} intensity={0.35} color="#e6f0ff" />
-          <Room />
+          <hemisphereLight args={["#fff6ea", "#b39c86", 0.8]} />
+          {/* 창문에서 들어오는 빛: 그림자는 이 조명 하나만 */}
+          <directionalLight
+            position={[-3.2, 2.7, 0.6]}
+            intensity={1.7}
+            color="#ffe9d2"
+            castShadow={!mobile}
+            shadow-mapSize={[2048, 2048]}
+            shadow-bias={-0.0004}
+            shadow-normalBias={0.02}
+            shadow-camera-near={0.5}
+            shadow-camera-far={12}
+            shadow-camera-left={-4}
+            shadow-camera-right={4}
+            shadow-camera-top={3.5}
+            shadow-camera-bottom={-3}
+          />
+          <directionalLight position={[2.5, 3, 3]} intensity={0.3} color="#e6f0ff" />
+          <Room onReady={onReady} />
           <CameraRig />
         </Canvas>
       </SceneBoundary>
-      <FadeIn el={wrap} />
     </div>
   );
 }

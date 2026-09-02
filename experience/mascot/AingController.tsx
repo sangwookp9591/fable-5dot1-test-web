@@ -28,17 +28,17 @@ function placementFor(section: SectionId, mobile: boolean, vw: number): Placemen
     case "intro":
       return { x: 70, bottom: 4, height: h * 1.15 };
     case "career":
-      return { x: 84, bottom: 4, height: h, flip: true };
+      return { x: 84, bottom: 4, height: h };
     case "zivo":
-      return { x: 86, bottom: 3, height: h * 0.9, flip: true };
+      return { x: 86, bottom: 3, height: h * 0.9 };
     case "loop":
-      return { x: 14, bottom: 3, height: h * 0.95 };
+      return { x: 90, bottom: 3, height: h * 0.8 };
     case "studio":
-      return { x: 50, bottom: 6, height: h * 0.85 };
+      return { x: 14, bottom: 6, height: h * 0.9, flip: true };
     case "ai":
-      return { x: 12, bottom: 4, height: h };
+      return { x: 86, bottom: 4, height: h };
     case "review":
-      return { x: 86, bottom: 4, height: h, flip: true };
+      return { x: 86, bottom: 4, height: h };
     case "result":
       return { x: 50, bottom: 8, height: h * 1.1 };
   }

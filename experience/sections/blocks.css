@@ -70,7 +70,7 @@
 .note b { display: block; color: var(--ink); margin-bottom: 2px; }
 
 /* ── Work loop ── */
-.loop-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.loop-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; max-width: 1040px; }
 .terminal { background: #131a2a; color: #dfe6f3; border-radius: 16px; padding: 14px 16px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; line-height: 1.6; min-height: 232px; box-shadow: 0 20px 50px -30px rgba(0,0,0,.6); position: relative; overflow: hidden; }
 .terminal-bar { display: flex; gap: 6px; margin-bottom: 10px; }
 .terminal-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a4358; }
@@ -148,3 +148,6 @@
 .result-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
 .result-foot { margin-top: 26px; font-size: 12.5px; color: var(--muted); }
 @media (max-width: 640px) { .result-board { grid-template-columns: 1fr 1fr; } }
+
+/* intro panel: 다른 섹션보다 살짝 더 투명, 넓게 */
+.intro-copy.panel { max-width: 640px; background: color-mix(in srgb, var(--paper) 84%, transparent); }

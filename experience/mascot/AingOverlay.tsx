@@ -95,12 +95,12 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
       if (cancelled) return;
       onEndedRef.current?.(state);
     };
-    v.addEventListener("canplay", onCanPlay, { once: true });
+    v.addEventListener("canplaythrough", onCanPlay, { once: true });
     v.addEventListener("error", onError, { once: true });
     v.addEventListener("ended", onEnd);
     return () => {
       cancelled = true;
-      v.removeEventListener("canplay", onCanPlay);
+      v.removeEventListener("canplaythrough", onCanPlay);
       v.removeEventListener("error", onError);
       v.removeEventListener("ended", onEnd);
     };
@@ -139,15 +139,16 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
       className="aing"
       style={{
         position: "absolute",
-        left: `${x}vw`,
-        bottom: `${bottom}vh`,
+        left: 0,
+        bottom: 0,
         height: frameH,
         width: frameH * (16 / 9),
-        transform: `translateX(-50%) ${flip ? "scaleX(-1)" : ""}`,
-        transition: `left var(--dur-slow) var(--ease-out), bottom var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out), height var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out)`,
+        transform: `translate3d(calc(${x}vw - 50%), ${-bottom}vh, 0) ${flip ? "scaleX(-1)" : ""}`,
+        transition: `transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out), height var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out)`,
         opacity: hidden ? 0 : 1,
         clipPath,
-        willChange: "left, bottom, opacity",
+        willChange: "transform, opacity",
+        contain: "layout paint",
         pointerEvents: "none",
       }}
     >
