@@ -19,11 +19,13 @@ export function cueAing(cue: AingCue) {
 type Placement = { x: number; bottom: number; height: number; flip?: boolean; hidden?: boolean };
 
 /** 섹션별 위치. UI 를 가리지 않도록 콘텐츠 반대편에 둔다. */
-function placementFor(section: SectionId, mobile: boolean, vw: number): Placement {
+function placementFor(section: SectionId, mobile: boolean, vw: number, vh: number): Placement {
   const h = mobile ? Math.min(150, vw * 0.36) : Math.min(320, Math.max(220, vw * 0.2));
   if (mobile) {
-    // 모바일: 오른쪽 아래 작게. 콘텐츠와 겹치지 않게 bottom 여백
-    return { x: 80, bottom: 1.5, height: section === "result" || section === "review" ? h * 0.75 : h, hidden: section === "loop" };
+    // 모바일: 오른쪽 아래 작게. 세로가 짧은 폰(≤700px)은 패널 아랫줄을 가리지 않게 더 작게
+    const short = vh <= 700;
+    const dense = section === "result" || section === "review" || section === "ai" || section === "zivo";
+    return { x: 84, bottom: 1, height: h * (short ? 0.62 : dense ? 0.75 : 1), hidden: section === "loop" };
   }
   switch (section) {
     case "intro":
@@ -47,18 +49,21 @@ function placementFor(section: SectionId, mobile: boolean, vw: number): Placemen
 
 export function AingController() {
   const section = useExperience((s) => s.section);
-  const started = useExperience((s) => s.started);
   const caps = useExperience((s) => s.caps);
   const sceneFailed = useExperience((s) => s.sceneFailed);
   const [state, setState] = useState<AingState>("idle");
   const [line, setLine] = useState<string | null>(null);
   const [vw, setVw] = useState(1440);
+  const [vh, setVh] = useState(900);
   const lineTimer = useRef<number | null>(null);
   const holdTimer = useRef<number | null>(null);
   const prevSection = useRef<SectionId | null>(null);
 
   useEffect(() => {
-    const onResize = () => setVw(window.innerWidth);
+    const onResize = () => {
+      setVw(window.innerWidth);
+      setVh(window.innerHeight);
+    };
     onResize();
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
@@ -91,22 +96,31 @@ export function AingController() {
     };
   }, [section, say]);
 
-  // 섹션 진입 시 기본 상태 + 대사
+  // 섹션 진입 시 기본 상태 + 대사 — store 변경 이벤트에 반응 (렌더 후 effect 에서 바로 setState 하지 않는다)
   useEffect(() => {
-    if (section === "intro") return;
-    const def = sectionDefs.find((s) => s.id === section)!;
-    setState(def.aing);
-    const l = section === "career" ? aingLines.career
-      : section === "zivo" ? aingLines.zivo
-      : section === "studio" ? aingLines.studio
-      : section === "ai" ? aingLines.ai
-      : section === "review" ? aingLines.review
-      : section === "result" ? aingLines.result[0]
-      : null;
-    // 앞뒤로 빠르게 넘길 때 대사가 겹치지 않게 짧게
-    if (l && prevSection.current !== section) say(l, 2800);
-    prevSection.current = section;
-  }, [section, say]);
+    const apply = (next: SectionId) => {
+      if (next === "intro") return;
+      const def = sectionDefs.find((s) => s.id === next)!;
+      setState(def.aing);
+      const l = next === "career" ? aingLines.career
+        : next === "zivo" ? aingLines.zivo
+        : next === "studio" ? aingLines.studio
+        : next === "ai" ? aingLines.ai
+        : next === "review" ? aingLines.review
+        : next === "result" ? aingLines.result[0]
+        : null;
+      // 앞뒤로 빠르게 넘길 때 대사가 겹치지 않게 짧게
+      if (l && prevSection.current !== next) say(l, 2800);
+      prevSection.current = next;
+    };
+    const unsub = useExperience.subscribe((st, prev) => {
+      if (st.section !== prev.section) apply(st.section);
+    });
+    // 새로고침 복원 등으로 처음부터 인트로가 아닌 곳에 있을 때
+    const initial = useExperience.getState().section;
+    if (initial !== "intro") queueMicrotask(() => apply(initial));
+    return unsub;
+  }, [say]);
 
   // 다음 섹션 클립 미리 받기
   useEffect(() => {
@@ -168,10 +182,7 @@ export function AingController() {
   const useAnchor = section === "loop" && !caps.mobile && !sceneFailed && caps.webgl;
   const [anch, setAnch] = useState<{ x: number; bottom: number; height: number; clip: number } | null>(null);
   useEffect(() => {
-    if (!useAnchor) {
-      setAnch(null);
-      return;
-    }
+    if (!useAnchor) return;
     let raf = 0;
     const tick = () => {
       const a = anchors.deskSeat;
@@ -193,7 +204,7 @@ export function AingController() {
     return () => cancelAnimationFrame(raf);
   }, [useAnchor]);
 
-  const p = placementFor(section, caps.mobile, vw);
+  const p = placementFor(section, caps.mobile, vw, vh);
   const anchored = useAnchor && anch;
   const hidden = p.hidden;
 
