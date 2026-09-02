@@ -1,7 +1,7 @@
 # AING × 박상욱 — Interactive Portfolio
 
 아잉이 일하는 작은 스튜디오를 스크롤로 둘러보며, 박상욱이 실제로 만든 것들을 방 안의 물건에서 꺼내 보는 인터랙티브 포트폴리오.
-`fable-5.1-interactive-web-spec.md` 의 구조·품질 기준과 `ai-ng-tone-rules.md` 의 말투를 따라 Claude Fable 5.1 이 만들고 직접 검수했다.
+`fable-5.1-interactive-web-spec.md` 의 구조·품질 기준과 `ai-ng-tone-rules.md` 의 말투를 따라 Claude Fable 5.1이 만들고 직접 검수했다.
 
 ## 실행
 
@@ -16,15 +16,17 @@ bun run build && bun run start
 
 ## 사용 기술과 이유
 
-| 기술 | 왜 |
-|---|---|
-| Three.js 0.182 + React Three Fiber 9 + drei 10 | 방(스튜디오)과 카메라 투어. WebGL. 오브젝트가 30개 남짓이라 WebGPU 는 이점이 없어 쓰지 않음 |
-| GSAP ScrollTrigger | 섹션별 스크롤 진행도. 네이티브 스크롤 유지, hijacking 없음 |
-| zustand | 섹션·시작 여부 같은 이산 상태. 60fps 값은 `progress` 객체에 직접 기록 |
-| WebM(VP9 alpha) + MOV(HEVC alpha) | 아잉 오버레이. Safari 는 HEVC, 둘 다 안 되면 애니메이션 WebP |
-| Kenney Furniture Kit (CC0) | 실제 가구 형태의 저용량 GLB (`public/models`, 316KB) |
-| Pretendard Variable (self-host, dynamic subset) | 한국어 본문. 필요한 유니코드 구간만 내려받음 |
-| Tailwind v4 (토큰만) + 일반 CSS | 디자인 토큰은 `app/globals.css`, 컴포넌트 스타일은 `experience/sections/*.css` |
+
+| 기술                                              | 왜                                                                |
+| ----------------------------------------------- | ---------------------------------------------------------------- |
+| Three.js 0.182 + React Three Fiber 9 + drei 10  | 방(스튜디오)과 카메라 투어. WebGL. 오브젝트가 30개 남짓이라 WebGPU 는 이점이 없어 쓰지 않음     |
+| GSAP ScrollTrigger                              | 섹션별 스크롤 진행도. 네이티브 스크롤 유지, hijacking 없음                           |
+| zustand                                         | 섹션·시작 여부 같은 이산 상태. 60fps 값은 `progress` 객체에 직접 기록                 |
+| WebM(VP9 alpha) + MOV(HEVC alpha)               | 아잉 오버레이. Safari 는 HEVC, 둘 다 안 되면 애니메이션 WebP                      |
+| Kenney Furniture Kit (CC0)                      | 실제 가구 형태의 저용량 GLB (`public/models`, 316KB)                       |
+| Pretendard Variable (self-host, dynamic subset) | 한국어 본문. 필요한 유니코드 구간만 내려받음                                        |
+| Tailwind v4 (토큰만) + 일반 CSS                      | 디자인 토큰은 `app/globals.css`, 컴포넌트 스타일은 `experience/sections/*.css` |
+
 
 ## Higgsfield 에셋 구조
 
@@ -73,3 +75,4 @@ experience/
 - 가구 모델: [Kenney Furniture Kit](https://kenney.nl/assets/furniture-kit) — CC0 (`public/models/LICENSE-kenney.txt`)
 - 폰트: Pretendard — SIL OFL 1.1
 - 아잉 캐릭터: 박상욱 (AI-NG). 영상 클립은 Higgsfield (Kling 3.0) 로 생성
+
