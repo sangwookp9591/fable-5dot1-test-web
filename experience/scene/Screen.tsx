@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { useExperience } from "@/experience/state/experience-store";
@@ -15,6 +15,15 @@ export function useScreenTexture(): THREE.CanvasTexture {
   const started = useExperience((s) => s.started);
   const loopStep = useExperience((s) => s.loopStep);
   const invalidate = useThree((s) => s.invalidate);
+
+  // 실제 이용자용 웹 캡처 (public/screens/zivo-app.jpg). 없으면 글자만.
+  const [appShot, setAppShot] = useState<HTMLImageElement | null>(null);
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setAppShot(img);
+    img.onerror = () => {};
+    img.src = "/screens/zivo-app.jpg";
+  }, []);
 
   const { canvas, tex } = useMemo(() => {
     const canvas = document.createElement("canvas");
@@ -85,6 +94,22 @@ export function useScreenTexture(): THREE.CanvasTexture {
         break;
       case "studio":
         lines.push({ t: "ZIVO · 이용자용 웹", w: 800, s: 30 }, { t: "병원 · 택시 · 호텔 · eSIM · QR 주문", w: 600, s: 22, c: "#677084" }, { t: "앱 설치 없이 결제까지", w: 700, s: 24, c: "#ff641e" });
+        if (appShot) {
+          // 오른쪽에 실제 화면을 폰 프레임처럼
+          const ph = H - 60;
+          const pw = Math.round((appShot.width / appShot.height) * ph);
+          const px = W - pw - 28;
+          ctx.fillStyle = "#17243a";
+          ctx.beginPath();
+          ctx.roundRect(px - 6, 52, pw + 12, ph + 12, 18);
+          ctx.fill();
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(px, 58, pw, ph, 12);
+          ctx.clip();
+          ctx.drawImage(appShot, px, 58, pw, ph);
+          ctx.restore();
+        }
         break;
       case "ai":
         lines.push({ t: "Claude · GPT · Gemini · Grok", w: 800, s: 28 }, { t: "같은 작업을 던져보고 비교", w: 600, s: 22, c: "#677084" });
@@ -105,7 +130,7 @@ export function useScreenTexture(): THREE.CanvasTexture {
     }
     tex.needsUpdate = true;
     invalidate();
-  }, [section, started, loopStep, canvas, tex, invalidate]);
+  }, [section, started, loopStep, appShot, canvas, tex, invalidate]);
 
   useEffect(() => () => tex.dispose(), [tex]);
   return tex;

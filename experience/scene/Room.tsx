@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
@@ -172,6 +172,54 @@ function TvTiles() {
         </mesh>
       ))}
     </group>
+  );
+}
+
+/**
+ * 벽 TV 화면: 실제 백오피스 캡처(public/screens/zivo-admin.jpg). 투어 2번째 정거장 근처에서 밝아진다.
+ * 이미지가 없거나 실패하면 기존 타일 연출만 남는다 (콘솔 에러 없이).
+ */
+function TvScreen() {
+  const [tex, setTex] = useState<THREE.Texture | null>(null);
+  const mat = useRef<THREE.MeshStandardMaterial>(null);
+  const invalidate = useThree((st) => st.invalidate);
+  useEffect(() => {
+    let disposed = false;
+    const img = new Image();
+    img.onload = () => {
+      if (disposed) return;
+      const t = new THREE.Texture(img);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.needsUpdate = true;
+      setTex(t);
+      invalidate();
+    };
+    img.onerror = () => {}; // 없으면 타일만
+    img.src = "/screens/zivo-admin.jpg";
+    return () => {
+      disposed = true;
+    };
+  }, [invalidate]);
+  useFrame(() => {
+    const m = mat.current;
+    if (!m) return;
+    // 투어 TV 정거장(0.2~0.45) 에서 가장 밝고, 그 밖에서는 꺼진 듯 어둡게
+    const t = progress.locals.studio;
+    const focus = Math.min(1, Math.max(0, 1 - Math.abs(t - 0.32) / 0.2));
+    const target = 0.25 + 0.75 * focus;
+    const next = THREE.MathUtils.damp(m.emissiveIntensity, target, 6, 0.016);
+    if (Math.abs(next - m.emissiveIntensity) > 0.002) {
+      m.emissiveIntensity = next;
+      invalidate();
+    }
+  });
+  useEffect(() => () => tex?.dispose(), [tex]);
+  if (!tex) return null;
+  return (
+    <mesh position={[0, 0.45, 0.125]}>
+      <planeGeometry args={[1.22, 0.68]} />
+      <meshStandardMaterial ref={mat} map={tex} emissive="#ffffff" emissiveMap={tex} emissiveIntensity={0.25} roughness={0.3} />
+    </mesh>
   );
 }
 
@@ -364,6 +412,7 @@ export function Room({ onReady }: { onReady: () => void }) {
         <Model name="cabinetTelevision" position={[-2.9, 0, -2.0]} scale={S} />
         <group position={[-2.1, 0.62, -2.28]}>
           <Model name="televisionModern" scale={S} />
+          <TvScreen />
           <group position={[0, 0.5, 0.13]}>
             <TvTiles />
           </group>
