@@ -30,6 +30,8 @@
 .board-tags span { font-size: 11px; font-weight: 700; color: var(--muted); background: var(--soft); border-radius: 6px; padding: 3px 7px; white-space: nowrap; }
 .board-scope { font-size: 14px; color: var(--muted); margin: 0; min-height: 1.5em; }
 @media (max-width: 640px) {
+  .intro-points li { grid-template-columns: 1fr; gap: 2px; }
+  .intro-points b { white-space: normal; }
   .board-row { grid-template-columns: 1fr; gap: 4px; }
   .board-tags { flex-direction: row; justify-content: flex-start; }
   .board-more { max-height: none; opacity: 1; }
@@ -44,15 +46,15 @@
 .stat-l { font-size: 12px; opacity: 0.75; margin-top: 8px; }
 .stats[data-compact] { grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0 0; }
 .stats[data-compact] .stat { padding: 8px 10px 8px; display: flex; align-items: baseline; gap: 6px; border-radius: 10px; }
-.stats[data-compact] .stat-v { font-size: 20px; }
+.stats[data-compact] .stat-v { font-size: 20px; white-space: nowrap; }
 .stats[data-compact] .stat-l { margin: 0; font-size: 11px; }
 .i18n .eyebrow { margin-top: 14px !important; }
 @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
 /* ── i18n slider ── */
 .i18n { margin-top: 20px; }
-.i18n-track { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-.i18n-side { border: 1.5px solid var(--line); border-radius: 14px; padding: 14px; background: #fff; transition: border-color var(--dur-base), box-shadow var(--dur-base), opacity var(--dur-base); }
+.i18n-track { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }
+.i18n-side { border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 14px; background: #fff; transition: border-color var(--dur-base), box-shadow var(--dur-base), opacity var(--dur-base); }
 .i18n-side .k { font-size: 11px; letter-spacing: .1em; font-weight: 700; color: var(--muted); }
 .i18n-side .t { font-weight: 800; font-size: 16px; margin: 6px 0 2px; }
 .i18n-side .d { font-size: 13px; color: var(--muted); }
@@ -65,12 +67,12 @@
 .langs { display: flex; flex-wrap: wrap; gap: 6px; min-height: 30px; }
 .langs span { font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 8px; background: var(--blue-soft); color: var(--blue); opacity: 0; transform: translateY(6px); transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
 .langs span.on { opacity: 1; transform: none; }
-.slider { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; cursor: ew-resize; }
+.slider { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; margin: 2px 0 0; background: transparent; cursor: ew-resize; }
 .slider::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--orange) calc(var(--t, 0) * 100%), var(--line) 0); }
 .slider::-moz-range-track { height: 6px; border-radius: 3px; background: var(--line); }
 .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); margin-top: -11px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
 .slider::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); }
-.slider-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 700; margin-top: -6px; }
+.slider-labels { display: none; }
 .note { border-left: 3px solid var(--orange); padding: 6px 0 6px 14px; margin-top: 16px; font-size: 14px; line-height: 1.55; color: var(--muted); }
 .note b { display: block; color: var(--ink); margin-bottom: 2px; }
 
@@ -150,11 +152,12 @@
 .result { text-align: center; }
 .result .h-display { font-size: clamp(30px, 4.2vw, 56px); }
 .result-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px auto; max-width: 720px; text-align: left; }
-.result-board div { background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px; }
+.result-board > div { background: #fff; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px; }
 .result-board .k { font-size: 12px; font-weight: 700; color: var(--muted); }
 .result-board .v { font-size: 16px; font-weight: 800; }
-.result-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
-.result-foot { margin-top: 26px; font-size: 12.5px; color: var(--muted); }
+.result-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
+.result-foot { margin-top: 18px; font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.result.panel { padding: clamp(20px, 3vw, 40px); }
 @media (max-width: 640px) { .result-board { grid-template-columns: 1fr 1fr; } }
 
 /* intro panel: 다른 섹션보다 살짝 더 투명, 넓게 */

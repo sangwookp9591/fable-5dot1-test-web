@@ -362,7 +362,7 @@ export function Room({ onReady }: { onReady: () => void }) {
         <WallBoard mats={mats} />
         <Poster mats={mats} />
         {/* 아잉이 책상 뒤에 앉는 자리 (모니터 오른쪽). 책상 윗면(0.78) 아래는 가려진다 */}
-        <Anchor id="deskSeat" feet={[0.2, 0.6, -2.1]} height={0.78} cutY={0.78} />
+        <Anchor id="deskSeat" feet={[0.25, 0.5, -2.12]} height={0.62} cutY={0.78} />
         <Ready onReady={onReady} />
       </Suspense>
       {mobile ? null : null}

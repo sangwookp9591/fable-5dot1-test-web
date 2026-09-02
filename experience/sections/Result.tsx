@@ -9,7 +9,7 @@ export function Result() {
   const replay = () => window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" });
   return (
     <Section id="result" label="마무리">
-      <div className="result kr" style={{ maxWidth: 820, margin: "0 auto" }}>
+      <div className="result kr panel" style={{ maxWidth: 820, margin: "0 auto" }}>
         <p className="eyebrow">Result</p>
         <h2 className="h-display">그래서 박상욱, 쓸 만했을까요?</h2>
         <p className="lead" style={{ maxWidth: 560, margin: "0 auto 8px" }}>

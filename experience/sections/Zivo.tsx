@@ -70,8 +70,8 @@ export function Zivo() {
 
         <div className={`i18n ${phase ? "on" : ""}`} aria-live="off" hidden={phase === 0}>
           <p className="eyebrow" style={{ marginTop: 18 }}>{zivo.i18n.eyebrow}</p>
-          <h3 className="h-section" style={{ fontSize: "clamp(18px, 1.9vw, 24px)" }}>{zivo.i18n.title}</h3>
-          <p className="lead" style={{ fontSize: 14, marginBottom: 12 }}>{zivo.i18n.body}</p>
+          <h3 className="h-section" style={{ fontSize: "clamp(18px, 1.7vw, 22px)", marginBottom: 8 }}>{zivo.i18n.title}</h3>
+          <p className="lead" style={{ fontSize: 14, marginBottom: 8 }}>{zivo.i18n.body}</p>
 
           <div className="urlbar" aria-hidden="true">
             <span className="lock">●</span>

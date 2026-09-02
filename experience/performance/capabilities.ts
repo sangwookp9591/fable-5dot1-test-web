@@ -22,6 +22,19 @@ export function detectCapabilities(): Capabilities {
   const mq = (q: string) => (typeof window !== "undefined" && window.matchMedia ? window.matchMedia(q).matches : false);
   const nav = navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } };
   const mobile = mq("(pointer: coarse)") || window.innerWidth < 900;
+  // 검증용 강제 스위치: ?reduced=1 ?novideo=1 ?no3d=1 (실패 처리 경로를 실제 브라우저에서 확인하기 위해)
+  const q = new URLSearchParams(window.location.search);
+  const force = (k: string) => q.get(k) === "1";
+  if (force("reduced") || force("novideo") || force("no3d")) {
+    return {
+      webgl: hasWebGL() && !force("no3d"),
+      reducedMotion: mq("(prefers-reduced-motion: reduce)") || force("reduced"),
+      mobile,
+      webmAlpha: !force("novideo") && canPlay('video/webm; codecs="vp9"'),
+      hevcAlpha: !force("novideo") && canPlay('video/mp4; codecs="hvc1"'),
+      saveData: false,
+    };
+  }
   return {
     webgl: hasWebGL(),
     reducedMotion: mq("(prefers-reduced-motion: reduce)"),

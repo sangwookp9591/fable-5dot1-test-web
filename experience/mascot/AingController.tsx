@@ -41,7 +41,7 @@ function placementFor(section: SectionId, mobile: boolean, vw: number): Placemen
     case "review":
       return { x: 86, bottom: 4, height: h };
     case "result":
-      return { x: 50, bottom: 8, height: h * 1.1 };
+      return { x: 86, bottom: 5, height: h * 1.05 };
   }
 }
 
