@@ -141,40 +141,6 @@ function WallBoard({ mats }: { mats: ReturnType<typeof useMats> }) {
   );
 }
 
-/** TV 화면 위 타일: 백오피스 157 화면. studio 투어 2번째 정거장에서 켜진다 */
-function TvTiles() {
-  const tiles = useMemo(() => {
-    const arr: [number, number][] = [];
-    for (let r = 0; r < 4; r++) for (let c = 0; c < 7; c++) arr.push([c, r]);
-    return arr;
-  }, []);
-  const grp = useRef<THREE.Group>(null);
-  const invalidate = useThree((st) => st.invalidate);
-  const reduced = useExperience((s) => s.caps.reducedMotion);
-  useFrame(() => {
-    const t = progress.locals.studio;
-    const k = Math.min(1, Math.max(0, (t - 0.28) / 0.22));
-    let moving = false;
-    grp.current?.children.forEach((m, i) => {
-      const target = i / tiles.length < k ? 1 : 0.001;
-      const mesh = m as THREE.Mesh;
-      mesh.scale.setScalar(reduced ? target : THREE.MathUtils.damp(mesh.scale.x, target, 8, 0.016));
-      if (Math.abs(mesh.scale.x - target) > 0.002) moving = true;
-    });
-    if (moving) invalidate();
-  });
-  return (
-    <group ref={grp} position={[-0.5, 0.26, 0]}>
-      {tiles.map(([c, r], i) => (
-        <mesh key={i} position={[c * 0.165, -r * 0.14, 0]} scale={0.001}>
-          <planeGeometry args={[0.13, 0.1]} />
-          <meshStandardMaterial color={i % 5 === 0 ? "#ff641e" : "#8fc3e6"} emissive={i % 5 === 0 ? "#ff641e" : "#8fc3e6"} emissiveIntensity={0.7} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
 /**
  * 벽 TV 화면: 실제 백오피스 캡처(public/screens/zivo-admin.jpg). 투어 2번째 정거장 근처에서 밝아진다.
  * 이미지가 없거나 실패하면 기존 타일 연출만 남는다 (콘솔 에러 없이).
@@ -413,9 +379,6 @@ export function Room({ onReady }: { onReady: () => void }) {
         <group position={[-2.1, 0.62, -2.28]}>
           <Model name="televisionModern" scale={S} />
           <TvScreen />
-          <group position={[0, 0.5, 0.13]}>
-            <TvTiles />
-          </group>
         </group>
         <Model name="lampRoundFloor" position={[-1.25, 0, -2.2]} scale={S} />
         <Model name="trashcan" position={[-1.3, 0, -1.9]} scale={S} />
