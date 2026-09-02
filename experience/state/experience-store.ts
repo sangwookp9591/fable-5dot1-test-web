@@ -31,7 +31,6 @@ type ExperienceState = {
   started: boolean;
   section: SectionId;
   caps: Capabilities;
-  soundOn: boolean;
   /** Three.js 로딩/실행 실패 → 정적 배경으로 대체 */
   sceneFailed: boolean;
   /** 고치는 과정 섹션의 현재 단계 (모니터 화면과 동기화) */
@@ -40,7 +39,6 @@ type ExperienceState = {
   start: () => void;
   setSection: (s: SectionId) => void;
   setCaps: (c: Partial<Capabilities>) => void;
-  toggleSound: () => void;
   failScene: () => void;
 };
 
@@ -48,14 +46,12 @@ export const useExperience = create<ExperienceState>((set) => ({
   started: false,
   section: "intro",
   caps: { webgl: true, reducedMotion: false, mobile: false, webmAlpha: true, hevcAlpha: false, saveData: false },
-  soundOn: false,
   sceneFailed: false,
   loopStep: 0,
   setLoopStep: (loopStep) => set((s) => (s.loopStep === loopStep ? s : { loopStep })),
   start: () => set({ started: true }),
   setSection: (section) => set((s) => (s.section === section ? s : { section })),
   setCaps: (c) => set((s) => ({ caps: { ...s.caps, ...c } })),
-  toggleSound: () => set((s) => ({ soundOn: !s.soundOn })),
   failScene: () => set({ sceneFailed: true }),
 }));
 
@@ -75,6 +71,4 @@ export const progress = {
   /** 포인터 정규화 좌표 -1..1 (화면 중심 기준) */
   pointerX: 0,
   pointerY: 0,
-  /** 스크롤 속도(px/s) — 빠른 스크롤 시 무거운 갱신을 건너뛰는 용도 */
-  velocity: 0,
 };

@@ -74,7 +74,12 @@ function MonitorScreen() {
     () => new THREE.MeshStandardMaterial({ map: tex, emissive: "#ffffff", emissiveMap: tex, emissiveIntensity: 0.9, roughness: 0.3 }),
     [tex],
   );
-  mat.emissiveIntensity = started ? 0.95 : 0.12;
+  const invalidate = useThree((st) => st.invalidate);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability -- three.js 재질은 mutable 객체. 렌더 밖(effect)에서만 바꾼다
+    mat.emissiveIntensity = started ? 0.95 : 0.12;
+    invalidate();
+  }, [started, mat, invalidate]);
   return (
     <group>
       {/* computerScreen(2x): 폭 0.78 · 높이 0.58 · 두께 0.2, 화면은 y 0.16~0.56 쯤 */}
@@ -144,14 +149,19 @@ function TvTiles() {
     return arr;
   }, []);
   const grp = useRef<THREE.Group>(null);
+  const invalidate = useThree((st) => st.invalidate);
+  const reduced = useExperience((s) => s.caps.reducedMotion);
   useFrame(() => {
     const t = progress.locals.studio;
     const k = Math.min(1, Math.max(0, (t - 0.28) / 0.22));
+    let moving = false;
     grp.current?.children.forEach((m, i) => {
-      const on = i / tiles.length < k;
+      const target = i / tiles.length < k ? 1 : 0.001;
       const mesh = m as THREE.Mesh;
-      mesh.scale.setScalar(THREE.MathUtils.damp(mesh.scale.x, on ? 1 : 0.001, 8, 0.016));
+      mesh.scale.setScalar(reduced ? target : THREE.MathUtils.damp(mesh.scale.x, target, 8, 0.016));
+      if (Math.abs(mesh.scale.x - target) > 0.002) moving = true;
     });
+    if (moving) invalidate();
   });
   return (
     <group ref={grp} position={[-0.5, 0.26, 0]}>
@@ -169,13 +179,19 @@ function TvTiles() {
 function ServerRack({ mats }: { mats: ReturnType<typeof useMats> }) {
   const blocks = useRef<THREE.Mesh[]>([]);
   const leds = useRef<THREE.Mesh[]>([]);
+  const invalidate = useThree((st) => st.invalidate);
+  const reduced = useExperience((s) => s.caps.reducedMotion);
   useFrame(() => {
     const t = progress.locals.studio;
     const k = Math.min(1, Math.max(0, (t - 0.52) / 0.2));
+    let moving = false;
     blocks.current.forEach((b, i) => {
       if (!b) return;
-      b.position.y = THREE.MathUtils.damp(b.position.y, 0.1 + i * (0.11 + 0.07 * k), 6, 0.016);
+      const target = 0.1 + i * (0.11 + 0.07 * k);
+      b.position.y = reduced ? target : THREE.MathUtils.damp(b.position.y, target, 6, 0.016);
+      if (Math.abs(b.position.y - target) > 0.0005) moving = true;
     });
+    if (moving) invalidate();
     leds.current.forEach((l, i) => {
       if (l) l.material = k > 0.5 || i === 0 ? mats.led : mats.ledOff;
     });

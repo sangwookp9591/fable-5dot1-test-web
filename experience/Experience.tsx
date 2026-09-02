@@ -8,6 +8,7 @@ import { useScrollTimeline } from "@/experience/timeline/useScrollTimeline";
 import { usePointerTracking } from "@/experience/interactions/usePointer";
 import { AingController } from "@/experience/mascot/AingController";
 import { SectionNav } from "@/experience/sections/SectionNav";
+import { SceneBoundary } from "@/experience/scene/SceneBoundary";
 import { Intro } from "@/experience/sections/Intro";
 import { Career } from "@/experience/sections/Career";
 import { Zivo } from "@/experience/sections/Zivo";
@@ -28,6 +29,7 @@ export function Experience() {
   const setCaps = useExperience((s) => s.setCaps);
   const caps = useExperience((s) => s.caps);
   const sceneFailed = useExperience((s) => s.sceneFailed);
+  const failScene = useExperience((s) => s.failScene);
 
   useEffect(() => {
     setCaps(detectCapabilities());
@@ -49,10 +51,16 @@ export function Experience() {
       </a>
       {/* 배경: 스튜디오 3D scene (고정). 실패/미지원 시 정적 배경 */}
       <div className="scene-layer" aria-hidden="true">
-        {show3D ? <StudioScene /> : <div className="scene-fallback" />}
+        {show3D ? (
+          <SceneBoundary onError={failScene}>
+            <StudioScene />
+          </SceneBoundary>
+        ) : (
+          <div className="scene-fallback" />
+        )}
       </div>
 
-      <main ref={rootRef} id="main" className="experience">
+      <main ref={rootRef} id="main" className="experience" data-reduced={caps.reducedMotion ? "" : undefined}>
         <Intro />
         <Career />
         <Zivo />

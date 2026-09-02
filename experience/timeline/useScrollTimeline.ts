@@ -22,8 +22,6 @@ export function useScrollTimeline(rootRef: React.RefObject<HTMLElement | null>) 
     if (!root) return;
     const els = Array.from(root.querySelectorAll<HTMLElement>("[data-section]"));
     const triggers: ScrollTrigger[] = [];
-    let lastY = window.scrollY;
-    let lastT = performance.now();
 
     els.forEach((el) => {
       const id = el.dataset.section as SectionId;
@@ -57,11 +55,6 @@ export function useScrollTimeline(rootRef: React.RefObject<HTMLElement | null>) 
         end: "bottom bottom",
         onUpdate: (self) => {
           progress.global = self.progress;
-          const now = performance.now();
-          const dt = Math.max(1, now - lastT);
-          progress.velocity = ((window.scrollY - lastY) / dt) * 1000;
-          lastY = window.scrollY;
-          lastT = now;
         },
       }),
     );

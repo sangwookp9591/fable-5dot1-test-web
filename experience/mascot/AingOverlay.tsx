@@ -23,6 +23,27 @@ export type AingOverlayProps = {
 };
 
 type Buffer = 0 | 1;
+
+/** 세션에서 한 번만: 첫 클립의 첫 프레임 모서리가 투명한지 확인 (HEVC alpha 지원 판정) */
+let alphaChecked = false;
+let probe: CanvasRenderingContext2D | null | undefined;
+function frameHasAlpha(v: HTMLVideoElement): boolean {
+  try {
+    if (probe === undefined) {
+      const c = document.createElement("canvas");
+      c.width = 8;
+      c.height = 8;
+      probe = c.getContext("2d", { willReadFrequently: true });
+    }
+    if (!probe) return true; // 판정 불가 → 믿고 진행
+    probe.clearRect(0, 0, 8, 8);
+    probe.drawImage(v, 0, 0, 8, 8);
+    const a = probe.getImageData(0, 0, 1, 1).data[3];
+    return a < 250;
+  } catch {
+    return true;
+  }
+}
 /** 컨테이너 기준 높이(px). 실제 크기는 transform: scale 로 맞춘다 */
 const BASE_H = 400;
 
@@ -45,21 +66,25 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   const [ready, setReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const onEndedRef = useRef(onEnded);
-  onEndedRef.current = onEnded;
+  useEffect(() => {
+    onEndedRef.current = onEnded;
+  }, [onEnded]);
 
   // 버퍼별로 "지금 어떤 상태를 로딩 중인지" 기록. 이전 버퍼 정리 타이머가 새 로딩을 죽이지 않게.
   const loading = useRef<[AingState | null, AingState | null]>([null, null]);
   const clearTimer = useRef<number | null>(null);
 
   // 클립 전환
+  // eslint-disable-next-line react-hooks/immutability -- <video> 요소(DOM)의 src/loop 를 effect 안에서 설정하는 것은 정상 패턴
   useEffect(() => {
     if (!useVideo || videoFailed) return;
     const next: Buffer = activeRef.current === 0 ? 1 : 0;
     const v = vids[next].current;
     if (!v) return;
-    let cancelled = false;
+    const run = { cancelled: false, started: false };
+    const loadingArr = loading.current;
     const def = clips[state];
-    loading.current[next] = state;
+    loadingArr[next] = state;
     v.loop = def.loop;
     v.muted = true;
     v.playsInline = true;
@@ -69,7 +94,7 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
     const clearInactive = () => {
       // 타이머가 울리는 시점의 비활성 버퍼를, 그 버퍼가 새 클립을 로딩 중이 아닐 때만 비운다
       const idx: Buffer = activeRef.current === 0 ? 1 : 0;
-      if (loading.current[idx] !== null) return;
+      if (loadingArr[idx] !== null) return;
       const p = vids[idx].current;
       if (!p) return;
       p.pause();
@@ -78,19 +103,28 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
     };
 
     const swap = () => {
-      if (cancelled) return;
-      loading.current[next] = null;
+      if (run.cancelled) return;
+      // Safari 의 HEVC 는 알파 없이도 "정상 재생" 될 수 있다 → 첫 프레임 모서리 픽셀이 불투명하면 알파 미지원으로 보고 WebP 로
+      if (ext === "mov" && !alphaChecked && !frameHasAlpha(v)) {
+        alphaChecked = true;
+        setVideoFailed(true);
+        return;
+      }
+      alphaChecked = true;
+      loadingArr[next] = null;
       activeRef.current = next;
       setActive(next);
       setReady(true);
       if (clearTimer.current) window.clearTimeout(clearTimer.current);
       clearTimer.current = window.setTimeout(clearInactive, 260); // crossfade 끝난 뒤
     };
-    const onCanPlay = () => {
-      if (cancelled) return;
+    const start = () => {
+      if (run.cancelled || run.started) return;
+      run.started = true;
+      window.clearTimeout(slowTimer);
       v.play()
         .then(() => {
-          if (cancelled) return;
+          if (run.cancelled) return;
           if ("requestVideoFrameCallback" in v) {
             (v as HTMLVideoElement & { requestVideoFrameCallback: (cb: () => void) => number }).requestVideoFrameCallback(swap);
           } else {
@@ -98,29 +132,45 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
           }
         })
         .catch(() => {
-          if (!cancelled) setVideoFailed(true);
+          if (!run.cancelled) setVideoFailed(true);
         });
     };
+    // canplaythrough 는 보장되지 않는 이벤트. 6초 안에 안 오면 데이터가 조금이라도 있으면 그냥 시작하고, 아예 없으면 WebP 로.
+    const slowTimer = window.setTimeout(() => {
+      if (run.cancelled || run.started) return;
+      if (v.readyState >= 2) start();
+      else setVideoFailed(true);
+    }, 6000);
     const onError = () => {
-      if (cancelled) return;
+      if (run.cancelled) return;
       setVideoFailed(true);
     };
     const onEnd = () => {
-      if (cancelled) return;
+      if (run.cancelled) return;
       onEndedRef.current?.(state);
     };
-    v.addEventListener("canplaythrough", onCanPlay, { once: true });
+    v.addEventListener("canplaythrough", start, { once: true });
     v.addEventListener("error", onError, { once: true });
     v.addEventListener("ended", onEnd);
     return () => {
-      cancelled = true;
-      if (loading.current[next] === state) loading.current[next] = null;
-      v.removeEventListener("canplaythrough", onCanPlay);
+      run.cancelled = true;
+      window.clearTimeout(slowTimer);
+      if (loadingArr[next] === state) loadingArr[next] = null;
+      v.removeEventListener("canplaythrough", start);
       v.removeEventListener("error", onError);
       v.removeEventListener("ended", onEnd);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, useVideo, videoFailed, ext]);
+
+  // 숨김(hidden) 이면 재생·decode 를 멈춘다. 다시 보이면 활성 버퍼만 재생.
+  useEffect(() => {
+    const v = vids[activeRef.current].current;
+    if (!v || !v.getAttribute("src")) return;
+    if (hidden) v.pause();
+    else v.play().catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hidden]);
 
   // 탭이 숨겨지면 정지, 돌아오면 재생
   useEffect(() => {
@@ -174,7 +224,8 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
         pointerEvents: "none",
       }}
     >
-      {/* 포스터: 첫 프레임 준비 전 / 실패 / reduced-motion */}
+      {/* 포스터: 첫 프레임 준비 전 / 실패 / reduced-motion. 애니메이션 WebP·투명 PNG 라 next/image 최적화 대상이 아님 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={showVideo && ready ? undefined : showVideo || caps.reducedMotion ? "/aing/rest.png" : fallbackUrl(state)}
         alt=""
@@ -212,7 +263,7 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
           />
         ))}
     </div>
-    {line ? <AingBubble key={line} text={line} x={x} bottomVh={bottom} charHeightPx={height} /> : null}
+    {line && !hidden ? <AingBubble key={line} text={line} x={x} bottomVh={bottom} charHeightPx={height} /> : null}
     </>
   );
 }

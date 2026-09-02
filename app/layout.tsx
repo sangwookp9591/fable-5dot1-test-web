@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "./pretendard.css";
 import "./globals.css";
 import "@/experience/sections/section.css";
 import "@/experience/sections/blocks.css";
@@ -25,9 +26,6 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <head>
-        <link rel="stylesheet" href="/fonts/pretendard/pretendard.css" />
-      </head>
       <body>{children}</body>
     </html>
   );

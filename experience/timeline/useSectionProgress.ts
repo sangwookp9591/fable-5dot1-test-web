@@ -7,7 +7,9 @@ import { progress, useExperience, SECTIONS, type SectionId } from "@/experience/
 export function useSectionFrame(id: SectionId, onFrame: (t: number) => void) {
   const section = useExperience((s) => s.section);
   const cb = useRef(onFrame);
-  cb.current = onFrame;
+  useEffect(() => {
+    cb.current = onFrame;
+  });
   useEffect(() => {
     const i = SECTIONS.indexOf(id);
     const j = SECTIONS.indexOf(section);
@@ -27,15 +29,25 @@ export function useSectionFrame(id: SectionId, onFrame: (t: number) => void) {
   }, [id, section]);
 }
 
-/** 임계값을 지날 때만 바뀌는 단계 index (0..thresholds.length). 역방향 스크롤도 같은 규칙. */
+/** 진행도 t 와 임계값 배열 → 단계 index (0..thresholds.length). 순수 함수 — 테스트 대상. */
+export function stepFor(t: number, thresholds: readonly number[]): number {
+  let s = 0;
+  for (let k = 0; k < thresholds.length; k++) if (t >= thresholds[k]) s = k + 1;
+  return s;
+}
+
+/**
+ * 임계값을 지날 때만 바뀌는 단계 index. 역방향 스크롤도 같은 규칙.
+ * reduced-motion 이면 스크롤로 단계를 숨기지 않고 항상 최종 단계를 보여준다 (콘텐츠 접근 동일, spec §20).
+ */
 export function useSteps(id: SectionId, thresholds: readonly number[]): number {
   const [step, setStep] = useState(0);
+  const reduced = useExperience((s) => s.caps.reducedMotion);
   useSectionFrame(id, (t) => {
-    let s = 0;
-    for (let k = 0; k < thresholds.length; k++) if (t >= thresholds[k]) s = k + 1;
+    const s = stepFor(t, thresholds);
     setStep((prev) => (prev === s ? prev : s));
   });
-  return step;
+  return reduced ? thresholds.length : step;
 }
 
 /** 요소에 CSS 변수 --t (0..1, 선택적 구간 매핑) 를 60fps 로 기록. React 재렌더 없음. */

@@ -41,6 +41,7 @@ export function useScreenTexture(): THREE.CanvasTexture {
       g.addColorStop(1, "#0f1522");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, W, H);
+      // eslint-disable-next-line react-hooks/immutability -- three.js 텍스처 갱신 플래그 (mutable 객체, effect 안)
       tex.needsUpdate = true;
       invalidate();
       return;

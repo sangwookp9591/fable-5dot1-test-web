@@ -1,25 +1,13 @@
 "use client";
 
-import { Component, useCallback, useEffect, useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { SceneBoundary } from "./SceneBoundary";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Room } from "./Room";
 import { preloadModels } from "./Model";
 import { resolveCamera } from "./camera";
 import { progress, useExperience, SECTIONS } from "@/experience/state/experience-store";
-
-class SceneBoundary extends Component<{ onError: () => void; children: ReactNode }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  componentDidCatch() {
-    this.props.onError();
-  }
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
-}
 
 /** WebGL context 유실: 복구를 기다리고, 캔버스가 아직 살아있는데 3초 안에 못 돌아오면 정적 배경으로 */
 function ContextGuard() {
@@ -78,11 +66,12 @@ function CameraRig() {
     };
   }, [invalidate, mobile]);
 
+  // eslint-disable-next-line react-hooks/immutability -- three.js 카메라(mutable 객체)를 프레임 루프에서 갱신하는 표준 패턴
   useFrame((_, dt) => {
     const cam = camera as THREE.PerspectiveCamera;
-    let fov = resolveCamera(SECTIONS, progress.timeline, pos.current, look.current);
+    const fovBase = resolveCamera(SECTIONS, progress.timeline, pos.current, look.current);
     // 세로 화면(모바일)은 가로 시야가 좁아지므로 fov 를 넓혀 같은 물건이 화면에 들어오게 한다
-    if (cam.aspect < 1) fov = Math.min(78, fov * (1 + (1 - cam.aspect) * 0.9));
+    const fov = cam.aspect < 1 ? Math.min(78, fovBase * (1 + (1 - cam.aspect) * 0.9)) : fovBase;
     // 포인터 반응은 아주 작게 (카메라 흔들림 금지)
     if (!reduced && !mobile) {
       look.current.x += progress.pointerX * 0.06;
@@ -102,6 +91,7 @@ function CameraRig() {
     }
     cam.lookAt(curLook.current);
     if (Math.abs(cam.fov - fovRef.current) > 0.01) {
+      // eslint-disable-next-line react-hooks/immutability -- 카메라 fov 직접 갱신 (three.js 표준)
       cam.fov = fovRef.current;
       cam.updateProjectionMatrix();
     }
