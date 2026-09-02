@@ -17,8 +17,8 @@ LCP 요소는 인트로 제목(텍스트). render delay 374ms 는 hydration + Pr
 
 | 카테고리 | 점수 |
 |---|---|
-| Accessibility | 96 → 배지 글자 대비(4.01, 2.66) 를 `--green-text` `--orange-text` 로 올려 재측정 대상 |
-| Best Practices | 100 |
+| Accessibility | 96 → 배지·주황 버튼 대비를 4.5:1 이상으로 수정 (`--orange-text #b53d07`, `--green-text`, `--blue-text`) → 재측정 결과는 09-final-review 참조 |
+| Best Practices | 100 (중간에 96 으로 떨어진 적 있음 — 재빌드 후 옛 서버가 살아 있어 청크 500. 포트 기준으로 서버를 죽이고 재시작해 해결) |
 | SEO | 100 |
 
 ## 번들
