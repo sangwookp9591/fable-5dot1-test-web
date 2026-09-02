@@ -70,10 +70,12 @@ export function AingController() {
     if (text) lineTimer.current = window.setTimeout(() => setLine(null), ms);
   }, []);
 
-  // 인트로: 시작 전에는 등장 → 대사 2개. 시작 후 idle.
+  // 인트로: 처음 들어오면 등장 → 대사 2개. [바로 보기] 를 눌러도 걷는 클립은 끊지 않고 끝나면 idle 로.
+  const entered = useRef(false);
   useEffect(() => {
     if (section !== "intro") return;
-    if (!started) {
+    if (!entered.current) {
+      entered.current = true;
       setState("enter");
       const t1 = window.setTimeout(() => say(aingLines.intro[0], 2600), 2400);
       const t2 = window.setTimeout(() => say(aingLines.intro[1], 3200), 5200);
@@ -82,8 +84,9 @@ export function AingController() {
         window.clearTimeout(t2);
       };
     }
-    setState("idle");
-  }, [section, started, say]);
+    // 다른 섹션에서 돌아온 경우
+    setState((s) => (s === "leave" || s === "enter" ? s : "idle"));
+  }, [section, say]);
 
   // 섹션 진입 시 기본 상태 + 대사
   useEffect(() => {

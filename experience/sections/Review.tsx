@@ -9,13 +9,13 @@ import { useSteps } from "@/experience/timeline/useSectionProgress";
 
 /** 이 사이트를 만들면서 실제로 돈 검수. 결과는 docs/fable-experiment/09-final-review.md 와 같다. */
 export const REVIEW_ITEMS = [
-  { k: "구조", s: "PASS", d: "experience/ 아래 state · timeline · mascot · scene 으로 나눴습니다. 인터랙션 로직이 컴포넌트마다 흩어지지 않습니다." },
-  { k: "화면", s: "PASS", d: "1440 · 1280 · 1024 · 430 · 390 · 375 에서 스크린샷을 찍고 겹침·잘림을 고쳤습니다." },
-  { k: "인터랙션", s: "PASS", d: "빠르게 스크롤해도, 거꾸로 스크롤해도 같은 위치면 같은 화면입니다." },
-  { k: "아잉 영상", s: "PASS", d: "클립 교체 시 검은 프레임 없음. WebM 이 막히면 WebP 로 바꿉니다." },
-  { k: "Three.js", s: "IMPROVED", d: "처음엔 그림자 때문에 느렸습니다. 그림자를 빼고 접촉 그림자만 남겼습니다." },
-  { k: "성능", s: "TRADE-OFF", d: "3D 를 깔면 첫 화면이 무거워집니다. 그래서 3D 는 첫 화면 뒤에 따로 불러옵니다." },
-  { k: "접근성", s: "PASS", d: "키보드로 전부 이동되고, 움직임 줄이기를 켜면 영상과 카메라가 멈춥니다." },
+  { k: "구조", s: "PASS", d: "experience/ 아래 state · timeline · mascot · scene 으로 나눴습니다. 연출은 전부 스크롤 위치의 함수입니다." },
+  { k: "화면", s: "PASS", d: "1440 과 390 에서 섹션마다 스크린샷을 찍고 패널이 잘리는 곳, 겹치는 곳을 고쳤습니다." },
+  { k: "인터랙션", s: "PASS", d: "맨 아래에서 맨 위까지 1.5초에 거꾸로 올려도 섹션과 아잉 상태가 제자리로 돌아옵니다." },
+  { k: "아잉 영상", s: "PASS", d: "클립 11개, 시작·끝 포즈가 같아 전환에 튐이 없습니다. WebM 이 막히면 MOV, 그것도 막히면 WebP." },
+  { k: "Three.js", s: "IMPROVED", d: "처음엔 상자로 만든 가구가 어색했습니다. 실제 가구 모델과 그림자로 바꿨습니다." },
+  { k: "성능", s: "TRADE-OFF", d: "3D(258KB) 는 첫 화면 뒤에 따로 받습니다. 대신 방이 0.5초 늦게 나타납니다." },
+  { k: "접근성", s: "PASS", d: "키보드로 전부 이동되고, 움직임 줄이기를 켜면 영상과 카메라가 멈춥니다. Lighthouse 접근성 96 → 대비 수정." },
 ] as const;
 
 export function Review() {
