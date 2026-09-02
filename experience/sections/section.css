@@ -146,7 +146,9 @@
 .aing-bubble {
   pointer-events: none;
   white-space: nowrap;
+  max-width: min(78vw, 420px);
 }
+.aing-bubble-text { white-space: normal; max-width: 100%; text-align: center; }
 .aing-bubble-text {
   display: inline-block;
   background: #fff;
@@ -160,6 +162,8 @@
   animation: bubble-in var(--dur-base) var(--ease-out) both;
   position: relative;
 }
+.aing-bubble[data-edge="right"] .aing-bubble-text::after { left: 85%; }
+.aing-bubble[data-edge="left"] .aing-bubble-text::after { left: 15%; }
 .aing-bubble-text::after {
   content: "";
   position: absolute;

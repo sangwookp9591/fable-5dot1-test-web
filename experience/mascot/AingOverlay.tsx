@@ -145,6 +145,9 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   }, [state, useVideo, videoFailed]);
 
   const showVideo = useVideo && !videoFailed;
+  // 가장자리 판정 (flip 이면 컨테이너 좌표가 반전되므로 방향도 반전)
+  const rawEdge: "left" | "center" | "right" = x > 72 ? "right" : x < 28 ? "left" : "center";
+  const edge = flip ? (rawEdge === "right" ? "left" : rawEdge === "left" ? "right" : "center") : rawEdge;
   // 컨테이너 크기는 고정(BASE_H)하고 transform: scale 로만 키운다 → 크기·위치 변화가 layout shift(CLS) 를 만들지 않는다.
   // 프레임 720 중 캐릭터 580 → 프레임 높이 = height / 0.805
   const frameH = height / 0.805;
@@ -170,7 +173,6 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
         opacity: hidden ? 0 : 1,
         clipPath: clipLocal,
         willChange: "transform, opacity",
-        contain: "layout paint",
         pointerEvents: "none",
       }}
     >
@@ -214,12 +216,14 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
       {line ? (
         <div
           className="aing-bubble kr"
+          data-edge={edge}
           style={{
             position: "absolute",
             left: "50%",
-            bottom: "calc(80.5% + 8%)",
-            transformOrigin: "50% 100%",
-            transform: `translateX(-50%) scale(${(1 / scale).toFixed(4)}) ${flip ? "scaleX(-1)" : ""}`,
+            bottom: "calc(80.5% + 6%)",
+            transformOrigin: `${edge === "right" ? "85%" : edge === "left" ? "15%" : "50%"} 100%`,
+            // 화면 가장자리에 서 있으면 말풍선을 안쪽으로 밀어 잘리지 않게 한다 (flip 이면 좌우가 뒤집히므로 반대로)
+            transform: `translateX(${edge === "right" ? "-85%" : edge === "left" ? "-15%" : "-50%"}) scale(${(1 / scale).toFixed(4)}) ${flip ? "scaleX(-1)" : ""}`,
           }}
         >
           <span key={line} className="aing-bubble-text">

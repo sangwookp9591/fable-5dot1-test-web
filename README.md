@@ -44,6 +44,26 @@ scripts/aing/
 
 사용 크레딧 **68.5 / 100** (Kling 3.0 × 11 = 67.5, Nano Banana 2 Lite × 1). 자세한 판단은 `docs/fable-experiment/04-aing-webm.md`.
 
+## 인터랙션에 쓴 기술 (무엇을 · 왜)
+
+| 기술 | 어디에 | 왜 이걸 썼나 |
+|---|---|---|
+| CSS `position: sticky` + 긴 wrapper | 모든 섹션 | 스크롤을 빼앗지 않고(hijacking 금지) 한 화면을 고정한 채 내부 연출을 진행 |
+| GSAP ScrollTrigger | 섹션별 진행도 `progress.locals[id]` | 리사이즈·역방향에 안전한 스크롤 수학, 화면 중앙 기준 활성 섹션 판정 |
+| 모듈 스코프 `progress` 객체 + rAF | 카운트업 숫자, CSS 변수 `--t`, 카메라 | 60fps 값은 React state 를 거치지 않는다. `useSteps` 는 임계값을 지날 때만 setState |
+| React Three Fiber `frameloop="demand"` | 3D 스튜디오 | 스크롤·포인터·상태 변경 때만 렌더, 카메라가 멈추면 GPU 0 |
+| 카메라 키프레임 + `resolveCamera(timeline)` 순수 함수 | 섹션 이동, 4 정거장 투어 | 어떤 순서로 스크롤해도 같은 위치면 같은 화면 |
+| `Vector3.project()` → DOM 앵커 (`anchors.ts`) | 고치는 과정에서 아잉이 책상 뒤에 앉음 | 2D 영상을 3D 좌표에 붙이고 `clip-path` 로 책상 윗면 아래를 가림 |
+| CanvasTexture (2D canvas → three) | 모니터 화면, 포스터, 바닥·벽 질감 | 외부 이미지 없이 섹션 내용을 방 안 물건에 반영 |
+| Dual `<video>` buffer + `requestVideoFrameCallback` | 아잉 클립 전환 | 새 클립의 첫 프레임이 그려진 뒤에만 opacity 교체 → 검은 프레임·튐 없음 |
+| VP9 alpha WebM / HEVC alpha MOV / 애니메이션 WebP | 아잉 오버레이 | 브라우저별 알파 비디오 지원 차이를 순서대로 fallback |
+| `transform`-only 이동·크기 (`translate3d` + `scale`) | 아잉 위치·크기, 단계 카드 강조 | layout shift 0, compositor 스레드에서만 처리 (CLS 0.237 → 0.008) |
+| `<input type="range">` + 스크롤 연동 | ZIVO 14개 언어 슬라이더 | 스크롤이 먼저 밀고, 사용자가 드래그하면 그 값이 우선 |
+| `CustomEvent` 기반 `cueAing()` | 섹션 → 아잉 반응 (놀람·타이핑·에러) | 섹션 컴포넌트가 아잉 구현을 몰라도 신호만 보냄. 활성 섹션이 아니면 무시 |
+| PerformanceObserver (LCP · layout-shift · event) + rAF FPS | 검수 섹션 라이브 측정 | 방문자 브라우저에서 실제 값을 보여주고 기준 미달이면 아잉이 반응 |
+| `IntersectionObserver` 대신 섹션 인접성 예열 (`fetch cache: force-cache`) | 다음 섹션 클립 | 사용 직전에만 받고 saveData 면 받지 않음 |
+| `prefers-reduced-motion` + `?reduced=1 ?novideo=1 ?no3d=1` | 접근성·실패 경로 | 영상은 정지 포스터, 카메라 즉시 이동, 3D 는 정적 배경 |
+
 ## Interaction architecture
 
 ```
