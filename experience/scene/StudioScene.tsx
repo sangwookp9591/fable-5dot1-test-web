@@ -1,0 +1,122 @@
+"use client";
+
+import { Component, useEffect, useRef, type ReactNode } from "react";
+import * as THREE from "three";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Room } from "./Room";
+import { resolveCamera } from "./camera";
+import { progress, useExperience, SECTIONS } from "@/experience/state/experience-store";
+
+class SceneBoundary extends Component<{ onError: () => void; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch() {
+    this.props.onError();
+  }
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
+/** 스크롤 → 카메라. demand 렌더: 움직이는 동안만 다음 프레임을 요청한다. */
+function CameraRig() {
+  const { camera, invalidate } = useThree();
+  const reduced = useExperience((s) => s.caps.reducedMotion);
+  const mobile = useExperience((s) => s.caps.mobile);
+  const pos = useRef(new THREE.Vector3());
+  const look = useRef(new THREE.Vector3());
+  const curLook = useRef(new THREE.Vector3(0, 0.9, -1.3));
+  const fovRef = useRef(42);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    // 스크롤/포인터/리사이즈 시 프레임 요청 (demand 모드)
+    const kick = () => invalidate();
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", kick);
+    if (!mobile) window.addEventListener("pointermove", kick, { passive: true });
+    const unsub = useExperience.subscribe(kick);
+    kick();
+    return () => {
+      window.removeEventListener("scroll", kick);
+      window.removeEventListener("resize", kick);
+      window.removeEventListener("pointermove", kick);
+      unsub();
+    };
+  }, [invalidate, mobile]);
+
+  useFrame((_, dt) => {
+    const cam = camera as THREE.PerspectiveCamera;
+    const fov = resolveCamera(SECTIONS, progress.timeline, pos.current, look.current);
+    // 포인터 반응은 아주 작게 (카메라 흔들림 금지)
+    if (!reduced && !mobile) {
+      look.current.x += progress.pointerX * 0.06;
+      look.current.y -= progress.pointerY * 0.04;
+    }
+    const d = Math.min(dt, 0.05);
+    if (!initialized.current || reduced) {
+      cam.position.copy(pos.current);
+      curLook.current.copy(look.current);
+      fovRef.current = fov;
+      initialized.current = true;
+    } else {
+      const k = 1 - Math.exp(-d * 5.5);
+      cam.position.lerp(pos.current, k);
+      curLook.current.lerp(look.current, k);
+      fovRef.current = THREE.MathUtils.lerp(fovRef.current, fov, k);
+    }
+    cam.lookAt(curLook.current);
+    if (Math.abs(cam.fov - fovRef.current) > 0.01) {
+      cam.fov = fovRef.current;
+      cam.updateProjectionMatrix();
+    }
+    // 아직 목표에 못 갔으면 다음 프레임 계속
+    if (cam.position.distanceToSquared(pos.current) > 1e-6 || curLook.current.distanceToSquared(look.current) > 1e-6 || Math.abs(cam.fov - fov) > 0.05) {
+      invalidate();
+    }
+  });
+  return null;
+}
+
+/** 첫 프레임이 그려진 뒤 살짝 페이드인 (레이아웃 점프 없이) */
+function FadeIn({ el }: { el: React.RefObject<HTMLDivElement | null> }) {
+  useEffect(() => {
+    const id = requestAnimationFrame(() => el.current?.classList.add("on"));
+    return () => cancelAnimationFrame(id);
+  }, [el]);
+  return null;
+}
+
+export function StudioScene() {
+  const failScene = useExperience((s) => s.failScene);
+  const mobile = useExperience((s) => s.caps.mobile);
+  const wrap = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={wrap} className="scene-canvas">
+      <SceneBoundary onError={failScene}>
+        <Canvas
+          frameloop="demand"
+          dpr={mobile ? [1, 1] : [1, 1.5]}
+          camera={{ position: [2.3, 1.75, 3.4], fov: 42, near: 0.1, far: 30 }}
+          gl={{ antialias: true, alpha: false, powerPreference: "high-performance", stencil: false }}
+          onCreated={({ gl, scene }) => {
+            gl.setClearColor("#f6f1e8");
+            gl.toneMapping = THREE.ACESFilmicToneMapping;
+            gl.toneMappingExposure = 1.05;
+            scene.fog = new THREE.Fog("#f6f1e8", 6, 12);
+          }}
+          style={{ position: "absolute", inset: 0 }}
+        >
+          <hemisphereLight args={["#fff6ea", "#b39c86", 0.85]} />
+          <directionalLight position={[-3.5, 2.6, 0.4]} intensity={1.6} color="#ffe9d2" />
+          <directionalLight position={[2.5, 3, 3]} intensity={0.35} color="#e6f0ff" />
+          <Room />
+          <CameraRig />
+        </Canvas>
+      </SceneBoundary>
+      <FadeIn el={wrap} />
+    </div>
+  );
+}

@@ -1,0 +1,260 @@
+/* ── Layers ── */
+.scene-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.scene-fallback {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 70% 20%, #fff7ee 0%, transparent 60%),
+    linear-gradient(180deg, #f6f1e8 0%, #efe9df 60%, #e6dfd3 100%);
+}
+.experience {
+  position: relative;
+  z-index: 10;
+}
+.aing-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+}
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+}
+.skip-link:focus { top: 16px; }
+
+/* ── Section scaffold: tall wrapper + sticky stage ── */
+.section {
+  position: relative;
+  min-height: 100svh;
+}
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: grid;
+  align-items: center;
+  padding: clamp(20px, 4vw, 64px);
+  box-sizing: border-box;
+}
+.stage-inner {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+/* 콘텐츠 열: 아잉이 서는 반대편에 둔다 */
+.col-left { width: min(100%, 620px); }
+.col-right { width: min(100%, 620px); margin-left: auto; }
+
+/* ── Panel: 종이 느낌 카드 (배경 3D 위에서 가독성 확보) ── */
+.panel {
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 20px;
+  padding: clamp(20px, 3vw, 36px);
+  box-shadow: 0 12px 40px -24px rgba(23, 36, 58, 0.35);
+}
+
+/* ── Type ── */
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.h-display {
+  font-size: clamp(30px, 4.6vw, 62px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0 0 16px;
+  color: var(--ink);
+}
+.h-section {
+  font-size: clamp(24px, 3.2vw, 40px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+.lead {
+  font-size: clamp(15px, 1.25vw, 18px);
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+.big-num {
+  font-size: clamp(56px, 9vw, 128px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast), box-shadow var(--dur-fast);
+  user-select: none;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { background: var(--night); box-shadow: 0 8px 24px -12px rgba(17, 26, 45, 0.6); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { background: var(--soft); }
+.btn-orange { background: var(--orange); color: #fff; }
+.btn-orange:hover { filter: brightness(0.95); }
+
+/* ── Reveal (scroll-driven, progress 로 제어) ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.reveal.on { opacity: 1; transform: none; }
+.reveal-stagger > * { transition-delay: calc(var(--i, 0) * 60ms); }
+
+/* ── Aing bubble ── */
+.aing-bubble {
+  pointer-events: none;
+  white-space: nowrap;
+}
+.aing-bubble-text {
+  display: inline-block;
+  background: #fff;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 16px;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: clamp(14px, 1.1vw, 17px);
+  box-shadow: 3px 3px 0 var(--ink);
+  animation: bubble-in var(--dur-base) var(--ease-out) both;
+  position: relative;
+}
+.aing-bubble-text::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-right: 1.5px solid var(--ink);
+  border-bottom: 1.5px solid var(--ink);
+  transform: translateX(-50%) rotate(45deg);
+}
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Section nav (dots) ── */
+.section-nav {
+  position: fixed;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+}
+.section-nav a {
+  display: block;
+  width: 44px;
+  height: 22px;
+  position: relative;
+}
+.section-nav a::before {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  transform: translateY(-50%);
+  transition: background var(--dur-fast), transform var(--dur-fast);
+}
+.section-nav a[aria-current="true"]::before { background: var(--orange); transform: translateY(-50%) scale(1.4); }
+.section-nav a span {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 2px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity var(--dur-fast), transform var(--dur-fast);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.section-nav a:hover span, .section-nav a:focus-visible span { opacity: 1; transform: translateY(-50%); }
+@media (max-width: 900px) { .section-nav { display: none; } }
+
+/* ── Scroll hint ── */
+.scroll-hint {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 35;
+  font-size: 13px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  transition: opacity var(--dur-base);
+}
+.scroll-hint i {
+  display: block;
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(var(--muted), transparent);
+  animation: hint 1.6s ease-in-out infinite;
+}
+@keyframes hint { 0%,100% { transform: scaleY(0.6); opacity: .4 } 50% { transform: scaleY(1); opacity: 1 } }
+
+/* ── Mobile ── */
+@media (max-width: 900px) {
+  .stage { align-items: start; padding-top: 72px; padding-bottom: 180px; }
+  .col-left, .col-right { width: 100%; margin-left: 0; }
+  .panel { padding: 18px; border-radius: 16px; }
+}
+
+.scene-canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 600ms var(--ease-out); }
+.scene-canvas.on { opacity: 1; }

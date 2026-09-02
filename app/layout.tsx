@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "@/experience/sections/section.css";
+import "@/experience/sections/blocks.css";
 
 export const metadata: Metadata = {
   title: "박상욱 · 아잉 스튜디오 — 만들고, 고치고, 끝까지 보는 개발자",
