@@ -19,31 +19,31 @@ export function cueAing(cue: AingCue) {
 type Placement = { x: number; bottom: number; height: number; flip?: boolean; hidden?: boolean };
 
 /** 섹션별 위치. UI 를 가리지 않도록 콘텐츠 반대편에 둔다. */
+/** 섹션별 위치. UI 를 가리지 않도록 콘텐츠 반대편에 둔다. 크기는 한 규칙: 데스크톱 230px(인트로 260), 모바일 140(짧은 화면 110). */
 function placementFor(section: SectionId, mobile: boolean, vw: number, vh: number): Placement {
-  const h = mobile ? Math.min(150, vw * 0.36) : Math.min(320, Math.max(220, vw * 0.2));
   if (mobile) {
     // 모바일: 오른쪽 아래 작게. 세로가 짧은 폰(≤700px)은 패널 아랫줄을 가리지 않게 더 작게
-    const short = vh <= 700;
-    const dense = section === "result" || section === "review" || section === "ai" || section === "zivo";
-    return { x: 84, bottom: 1, height: h * (short ? 0.62 : dense ? 0.75 : 1), hidden: section === "loop" };
+    const h = vh <= 700 ? 110 : 140;
+    return { x: 84, bottom: 1, height: h, hidden: section === "loop" };
   }
+  const h = Math.min(230, Math.max(190, vw * 0.16));
   switch (section) {
     case "intro":
-      return { x: 70, bottom: 4, height: h * 1.15 };
+      return { x: 70, bottom: 4, height: Math.min(260, h * 1.13) };
     case "career":
       return { x: 84, bottom: 4, height: h };
     case "zivo":
-      return { x: 86, bottom: 3, height: h * 0.9 };
+      return { x: 86, bottom: 3, height: h };
     case "loop":
-      return { x: 90, bottom: 3, height: h * 0.8 };
+      return { x: 90, bottom: 3, height: h };
     case "studio":
-      return { x: 8, bottom: 3, height: h * 0.7, flip: true };
+      return { x: 9, bottom: 3, height: h * 0.9, flip: true };
     case "ai":
       return { x: 86, bottom: 4, height: h };
     case "review":
       return { x: 86, bottom: 4, height: h };
     case "result":
-      return { x: 86, bottom: 5, height: h * 1.05 };
+      return { x: 86, bottom: 5, height: h };
   }
 }
 
