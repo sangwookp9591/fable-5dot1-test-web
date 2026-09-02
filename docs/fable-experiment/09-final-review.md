@@ -54,6 +54,12 @@ Responsive — PASS
 Self Review — PASS
 ```
 
+## 역할 분담 (2차 라운드)
+
+- 사용자 캡처 피드백(말풍선 잘림, 아잉 머리만 보임) → Fable 5.1 이 원인 분석·수정.
+- 섹션별 스크린샷 저장, 모바일·짧은 세로 뷰포트 CSS 축약 → Opus 5 서브에이전트에 위임(허용 파일·검증 스크립트 명시), 결과 diff 는 Fable 5.1 이 검토·승인.
+- 외부 냉정 리뷰 → Codex CLI (GPT-5.6 Sol, read-only) 에 코드 + 스크린샷을 주고 받음 (`scripts/review/`). 결과와 반영 내역은 `10-external-review.md`.
+
 ## Higgsfield 사용
 
 68.5 / 100 크레딧. 3D 오브젝트 생성(multi_image_to_3d)은 비용 추정이 지원되지 않아 남은 예산 안에서 확정할 수 없었고, Kenney CC0 모델이 요구(실제 가구)를 충족해 쓰지 않았다.
