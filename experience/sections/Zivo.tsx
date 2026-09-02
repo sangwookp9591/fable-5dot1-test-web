@@ -37,7 +37,7 @@ export function Zivo() {
   useEffect(() => {
     if (value > 0.5 && !surprised.current) {
       surprised.current = true;
-      cueAing({ state: "surprise", line: "14개 언어… 이걸 혼자?" });
+      cueAing({ state: "surprise", line: "14개 언어… 이걸 혼자?", section: "zivo" });
     }
     if (value < 0.2) surprised.current = false;
   }, [value]);

@@ -35,7 +35,7 @@ export function Review() {
     const bad = (v.lcp !== null && !lcpGood) || !clsGood || !inpGood || (v.fps !== null && !fpsGood);
     if (bad && !warned.current) {
       warned.current = true;
-      cueAing({ state: "error", line: "이건 좀 느린데?" });
+      cueAing({ state: "error", line: "이건 좀 느린데?", section: "review" });
     }
   }, [section, step, v, lcpGood, clsGood, inpGood, fpsGood]);
 

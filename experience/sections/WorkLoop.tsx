@@ -25,13 +25,18 @@ export function WorkLoop() {
   const prev = useRef(-1);
   const setLoopStep = useExperience((s) => s.setLoopStep);
 
+  const section = useExperience((s) => s.section);
   useEffect(() => {
     setLoopStep(step);
+    if (section !== "loop") {
+      prev.current = -1; // 섹션에 다시 들어오면 현재 단계 cue 를 다시 보낸다
+      return;
+    }
     if (prev.current === step) return;
     prev.current = step;
     const lines = [aingLines.loop.plan, aingLines.loop.check, aingLines.loop.fix, aingLines.loop.rerun];
-    cueAing({ state: cur.aing as AingState, line: lines[step], hold: 2400 });
-  }, [step, cur.aing, setLoopStep]);
+    cueAing({ state: cur.aing as AingState, line: lines[step], hold: 2400, section: "loop" });
+  }, [step, cur.aing, setLoopStep, section]);
 
   return (
     <Section id="loop" label="테스트를 고치는 과정">

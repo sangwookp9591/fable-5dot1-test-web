@@ -10,7 +10,7 @@ import { aingLines } from "@/experience/content/portfolio";
 import { anchors } from "@/experience/scene/anchors";
 
 /** 섹션 컴포넌트가 아잉에게 일시적 반응을 요청할 때 쓰는 이벤트 */
-export type AingCue = { state: AingState; line?: string | null; hold?: number };
+export type AingCue = { state: AingState; line?: string | null; hold?: number; /** 이 섹션이 활성일 때만 반영 */ section?: SectionId };
 const CUE_EVENT = "aing:cue";
 export function cueAing(cue: AingCue) {
   window.dispatchEvent(new CustomEvent<AingCue>(CUE_EVENT, { detail: cue }));
@@ -120,6 +120,7 @@ export function AingController() {
   useEffect(() => {
     const onCue = (e: Event) => {
       const cue = (e as CustomEvent<AingCue>).detail;
+      if (cue.section && useExperience.getState().section !== cue.section) return;
       setState(cue.state);
       if (cue.line !== undefined) say(cue.line, cue.hold ?? 2600);
     };

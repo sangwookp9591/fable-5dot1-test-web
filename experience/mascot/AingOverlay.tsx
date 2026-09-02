@@ -45,39 +45,50 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
 
+  // 버퍼별로 "지금 어떤 상태를 로딩 중인지" 기록. 이전 버퍼 정리 타이머가 새 로딩을 죽이지 않게.
+  const loading = useRef<[AingState | null, AingState | null]>([null, null]);
+  const clearTimer = useRef<number | null>(null);
+
   // 클립 전환
   useEffect(() => {
     if (!useVideo || videoFailed) return;
     const next: Buffer = activeRef.current === 0 ? 1 : 0;
     const v = vids[next].current;
-    const prev = vids[activeRef.current].current;
     if (!v) return;
     let cancelled = false;
     const def = clips[state];
+    loading.current[next] = state;
     v.loop = def.loop;
     v.muted = true;
     v.playsInline = true;
     v.src = clipUrl(state, ext);
     v.load();
 
+    const clearInactive = () => {
+      // 타이머가 울리는 시점의 비활성 버퍼를, 그 버퍼가 새 클립을 로딩 중이 아닐 때만 비운다
+      const idx: Buffer = activeRef.current === 0 ? 1 : 0;
+      if (loading.current[idx] !== null) return;
+      const p = vids[idx].current;
+      if (!p) return;
+      p.pause();
+      p.removeAttribute("src");
+      p.load();
+    };
+
     const swap = () => {
       if (cancelled) return;
+      loading.current[next] = null;
       activeRef.current = next;
       setActive(next);
       setReady(true);
-      // crossfade 가 끝난 뒤 이전 버퍼 정지 + decode 중단
-      window.setTimeout(() => {
-        if (prev && prev !== v) {
-          prev.pause();
-          prev.removeAttribute("src");
-          prev.load();
-        }
-      }, 260);
+      if (clearTimer.current) window.clearTimeout(clearTimer.current);
+      clearTimer.current = window.setTimeout(clearInactive, 260); // crossfade 끝난 뒤
     };
     const onCanPlay = () => {
       if (cancelled) return;
       v.play()
         .then(() => {
+          if (cancelled) return;
           if ("requestVideoFrameCallback" in v) {
             (v as HTMLVideoElement & { requestVideoFrameCallback: (cb: () => void) => number }).requestVideoFrameCallback(swap);
           } else {
@@ -85,8 +96,7 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
           }
         })
         .catch(() => {
-          // autoplay 차단(muted 라 드물다) → 정지 포스터로
-          setVideoFailed(true);
+          if (!cancelled) setVideoFailed(true);
         });
     };
     const onError = () => {
@@ -102,6 +112,7 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
     v.addEventListener("ended", onEnd);
     return () => {
       cancelled = true;
+      if (loading.current[next] === state) loading.current[next] = null;
       v.removeEventListener("canplaythrough", onCanPlay);
       v.removeEventListener("error", onError);
       v.removeEventListener("ended", onEnd);
@@ -158,7 +169,7 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
     >
       {/* 포스터: 첫 프레임 준비 전 / 실패 / reduced-motion */}
       <img
-        src={showVideo && ready ? undefined : showVideo ? "/aing/rest.png" : fallbackUrl(state)}
+        src={showVideo && ready ? undefined : showVideo || caps.reducedMotion ? "/aing/rest.png" : fallbackUrl(state)}
         alt=""
         draggable={false}
         style={{
@@ -170,8 +181,6 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
           transform: "translateX(-50%)",
           opacity: showVideo && ready ? 0 : 1,
           transition: "opacity var(--dur-fast) var(--ease-out)",
-          // reduced-motion 이면 fallback webp 도 정지된 것처럼 보이게 첫 프레임만 (브라우저가 애니메이션 webp 를 항상 재생하므로 rest.png 사용)
-          ...(caps.reducedMotion ? { content: "url(/aing/rest.png)" } : null),
         }}
       />
       {showVideo &&
