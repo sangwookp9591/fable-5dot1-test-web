@@ -42,6 +42,12 @@ Trade-off: 3D 청크를 첫 화면 뒤에 받아 방이 ~0.5초 뒤 페이드인
 - 실패 경로: `?no3d=1`(정적 배경) · `?novideo=1`(WebP) · `?reduced=1` 모두 콘솔 깨끗함. WebGL context lost 는 3초 대기 후 정적 배경.
 - 남은 것: HEVC MOV 는 ffmpeg 디코드로 알파를 확인했지만 실제 Safari 재생은 이 환경(Chrome DevTools MCP)에서 못 봤다. `.mov` 가 안 되면 WebP 로 떨어지는 경로는 코드로 보장된다.
 
+## 외부 리뷰 라운드 (GPT-5.6 Sol 2회) 요약
+
+- 1차 코드·UX 4.1/10 → 23개 이슈 중 17개 반영, 4개 부분 반영, 2개 근거 남기고 유지 (`10-external-review.md`).
+- 2차 시각 디자인 5.4/10 → 패널 93%·글자색 고정·글자 4단계·카드 안 카드 제거·버튼 2개 규칙·아잉 크기 규칙 반영 (디자인 패스, `scripts/review/design-pass-spec.md`).
+- 검증 방법도 바뀜: `bun run check`(tsc+lint+test) + 5개 뷰포트 자동 스윕(아잉 가시성·말풍선 잘림·패널 넘침) + 스크린샷 26장 저장소 보관.
+
 ## 최종 보드
 
 ```
