@@ -38,7 +38,7 @@ Trade-off: 3D 청크를 첫 화면 뒤에 받아 방이 ~0.5초 뒤 페이드인
 
 ## 7차 · Code — PASS
 
-- `bunx tsc --noEmit` 0 에러, `next build` 성공(정적 프리렌더), 콘솔 error 0 · warning 0 (three r182 로 Clock deprecation 경고까지 제거).
+- `bun run check` (= `tsc --noEmit` + `eslint` + `bun test`) 통과: 타입 0 에러, lint 0 문제 (외부 리뷰 시점엔 9 errors 였음 → React Compiler 규칙에 맞게 수정), 단위 테스트 8개. `next build` 성공(정적 프리렌더), 콘솔 error 0 · warning 0.
 - 실패 경로: `?no3d=1`(정적 배경) · `?novideo=1`(WebP) · `?reduced=1` 모두 콘솔 깨끗함. WebGL context lost 는 3초 대기 후 정적 배경.
 - 남은 것: HEVC MOV 는 ffmpeg 디코드로 알파를 확인했지만 실제 Safari 재생은 이 환경(Chrome DevTools MCP)에서 못 봤다. `.mov` 가 안 되면 WebP 로 떨어지는 경로는 코드로 보장된다.
 
