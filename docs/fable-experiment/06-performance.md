@@ -1,6 +1,6 @@
 # 06 · Performance
 
-측정: 프로덕션 빌드 (`bun run build && bun run start --port 3211`), Chrome DevTools MCP 트레이스, 1440×900, CPU/네트워크 throttling 없음 (로컬).
+측정: 정적 내보내기 빌드 (`bun run build` → `bunx serve out -p 3211`), Chrome DevTools MCP, 1440×900, CPU/네트워크 throttling 없음 (로컬).
 
 ## Web Vitals (프로덕션, 로컬)
 
@@ -8,19 +8,20 @@
 |---|---|---|---|
 | LCP | 385 ms (TTFB 4 · load 8 · render delay 374) | < 2.0 s | PASS |
 | CLS (로드) | 0.00 | < 0.05 | PASS |
-| CLS (전체 스크롤 9초 누적, 페이지 내 PerformanceObserver) | 0.008 (처음 0.237 → 수정) | < 0.05 | PASS |
+| CLS (전체 스크롤 9초 누적, 페이지 내 PerformanceObserver) | **0.002** (처음 0.237 → 수정) | < 0.05 | PASS |
 | INP | 방문자 브라우저에서 실측 (검수 섹션에 표시). 자동 스크롤 + 클릭 테스트에서 long task 없음 | < 150 ms | PASS (측정 계속) |
-| 스크롤 중 FPS | 평균 103, 표본 85 ~ 120 (120Hz 디스플레이, 9초 프로그램 스크롤) | 60 | PASS |
+| 스크롤 중 FPS | 평균 101~103 (120Hz 디스플레이, 9초 프로그램 스크롤) | 60 | PASS |
 
 LCP 요소는 인트로 제목(텍스트). render delay 374ms 는 hydration + Pretendard subset 폰트 swap. 네트워크가 느린 환경에서는 폰트 CSS(92 @font-face) 가 render-blocking 이 된다 → `font-display: swap` 으로 텍스트는 먼저 그려진다.
 
-## Lighthouse (desktop, navigation)
+## Lighthouse (desktop, navigation) — 정적 내보내기 최종
 
-| 카테고리 | 점수 |
-|---|---|
-| Accessibility | 96 → 배지·주황 버튼 대비 수정 (`--orange-text #b53d07`, `--green-text`, `--blue-text`) → **100** |
-| Best Practices | 100 (중간에 96 으로 떨어진 적 있음 — 재빌드 후 옛 서버가 살아 있어 청크 500. 포트 기준으로 서버를 죽이고 재시작해 해결) |
-| SEO | 100 |
+| 카테고리 | 점수 | 가는 길 |
+|---|---|---|
+| Accessibility | **100** | 96 → 배지·주황 버튼 대비(`--orange-text #b53d07`) → 97 → 단계 배지 `--muted`(4.36:1) 를 `--body` 로 → 100 |
+| Best Practices | **100** | 중간에 96 으로 떨어진 적 있음 — 재빌드 후 옛 서버가 살아 있어 청크 500. 포트 기준으로 죽이고 재시작해 해결 |
+| SEO | **100** | 91 → `public/robots.txt` 추가 → 100 |
+| Agentic Browsing | **100** | 67 → `public/llms.txt` 추가(마크다운 링크 포함해야 통과) → 100 |
 
 ## 번들
 
@@ -62,3 +63,8 @@ LCP 요소는 인트로 제목(텍스트). render delay 374ms 는 hydration + Pr
 - 3D 유지(dpr 1, 그림자 없음), 세로 화면은 fov 를 넓혀 같은 물건이 들어오게 함
 - 아잉은 작게(≤150px), 고치는 과정 섹션에서는 숨김 (터미널·단계가 화면을 다 씀)
 - `saveData` 이면 3D 를 켜지 않고 클립 예열도 하지 않음
+
+## 정적 내보내기 (Cloudflare Pages)
+
+`output: "export"` 라 `next start` 는 쓸 수 없고 `out/` 를 정적으로 서빙한다. `headers()` 도 적용되지 않으므로
+캐시 규칙은 `public/_headers` 에 둔다 (`/aing/*` `/fonts/*` `/models/*` `/screens/*` `/_next/static/*` → 1년 immutable).

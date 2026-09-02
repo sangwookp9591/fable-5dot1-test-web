@@ -98,7 +98,8 @@
 .step-count { display: none; }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .step { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 10px 12px; border-radius: 12px; border: 1.5px solid transparent; background: transparent; transition: border-color var(--dur-base), background var(--dur-base), transform var(--dur-base) var(--ease-out); }
-.step .k { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: var(--soft); color: var(--muted); }
+/* 배지는 --soft 배경 위라 --muted(4.36:1) 로는 대비가 모자란다 → --body */
+.step .k { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: var(--soft); color: var(--body); }
 .step .t { font-weight: 800; font-size: 14px; color: var(--muted); }
 .step .d { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 2px; }
 .step.done .k { background: var(--green-soft); color: var(--green-text); }
