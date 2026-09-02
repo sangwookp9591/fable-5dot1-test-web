@@ -18,12 +18,14 @@ export function Intro() {
   return (
     <Section id="intro" label="소개" className="intro">
       <div className="col-left intro-copy kr panel">
-        <p className="eyebrow">{hero.eyebrow} · {profile.period}</p>
+        <p className="eyebrow plain">{hero.eyebrow} · {profile.period}</p>
         <h1 className="h-display" id="intro-title">
           {hero.title[0]}
           <br />
           {hero.title[1]}
         </h1>
+        {/* 대표 범위 한 줄. 본문보다 진하게 둬서 제목 다음으로 먼저 읽히게 한다. */}
+        <p className="intro-summary">{hero.summary}</p>
         <p className="lead">{hero.body}</p>
         <ul className="intro-points">
           {hero.points.map((p) => (
@@ -45,7 +47,7 @@ export function Intro() {
           </a>
         </div>
         <p className="intro-name">
-          <b>{profile.name}</b> {profile.nameEn} · {profile.role} · {profile.roleSub}
+          <b>{profile.name}</b> · {profile.roleKr}
         </p>
       </div>
     </Section>

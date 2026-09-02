@@ -1,7 +1,7 @@
 "use client";
 
 import { Section } from "./Section";
-import { zivo, yeogigage } from "@/experience/content/portfolio";
+import { zivo, yeogigage, profile } from "@/experience/content/portfolio";
 import { useSteps } from "@/experience/timeline/useSectionProgress";
 import { useExperience } from "@/experience/state/experience-store";
 
@@ -34,8 +34,8 @@ export const TOUR_STOPS = [
     title: zivo.backend.title,
     body: zivo.backend.body,
     points: zivo.backend.points,
-    link: null,
-    linkLabel: null,
+    link: profile.web,
+    linkLabel: "자세한 이야기 보기",
   },
   {
     id: "laptop",
@@ -44,8 +44,8 @@ export const TOUR_STOPS = [
     title: yeogigage.title,
     body: yeogigage.body,
     points: yeogigage.points,
-    link: null,
-    linkLabel: null,
+    link: profile.web,
+    linkLabel: "자세한 이야기 보기",
   },
 ] as const;
 

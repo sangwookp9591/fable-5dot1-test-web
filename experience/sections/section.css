@@ -80,6 +80,8 @@
   font-weight: 600;
   margin: 0 0 12px;
 }
+/* 사람 이름처럼 대문자로 바꾸면 안 되는 줄 */
+.eyebrow.plain { text-transform: none; letter-spacing: 0.02em; }
 .h-display {
   font-size: clamp(30px, 4.6vw, 62px);
   line-height: 1.12;
@@ -229,7 +231,50 @@
   pointer-events: none;
 }
 .section-nav a:hover span, .section-nav a:focus-visible span { opacity: 1; transform: translateY(-50%); }
+/* 시작 전에는 화면에서 완전히 빼서 탭 순서에도 들어가지 않게 한다 */
+.section-nav[hidden] { display: none; }
 @media (max-width: 900px) { .section-nav { display: none; } }
+
+/* ── Contact bar (항상 오른쪽 위) ── */
+.contact-bar {
+  position: fixed;
+  right: 14px;
+  top: 14px;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: 0 6px 18px -10px rgba(23, 36, 58, 0.5);
+}
+.contact-bar[hidden] { display: none; }
+/* 손가락으로 누르는 항목이라 44px 아래로 내리지 않는다 */
+.contact-bar > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.contact-bar .contact-name { font-weight: 800; cursor: default; padding-right: 4px; }
+.contact-bar a:hover, .contact-bar button:hover { background: var(--soft); }
+@media (max-width: 900px) {
+  .contact-bar { top: 10px; right: 10px; }
+  /* 좁은 화면에서는 연락 수단만 남긴다 */
+  .contact-bar .contact-name, .contact-bar .contact-top { display: none; }
+  .contact-bar > * { padding: 0 12px; font-size: 12.5px; }
+}
 
 /* ── Scroll hint ── */
 .scroll-hint {
@@ -265,6 +310,10 @@
 .scene-canvas { position: absolute; inset: 0; opacity: 0; transition: opacity 600ms var(--ease-out); }
 .scene-canvas.on { opacity: 1; }
 
+/* ── 움직임 줄이기: 섹션을 붙잡아 두지 않고 그냥 위에서 아래로 읽히게 ── */
+[data-reduced] .section { height: auto !important; min-height: 100svh; }
+[data-reduced] .stage { position: static; height: auto; min-height: 100svh; }
+
 /* ── Short viewports (예: 1024×768 노트북) ── */
 @media (min-width: 901px) and (max-height: 820px) {
   .stage { padding-top: 48px; padding-bottom: 16px; }
@@ -273,6 +322,7 @@
   .lead { font-size: 14px; line-height: 1.5; margin-bottom: 10px; }
   .eyebrow { margin-bottom: 6px; }
   .intro-copy.panel .h-display { font-size: clamp(28px, 3.2vw, 40px); }
+  .intro-summary { font-size: 15px; margin-bottom: 8px; }
   .board-row { padding: 9px 0; }
   .stat { padding: 10px 12px 10px; }
   .stat-v { font-size: 28px; }

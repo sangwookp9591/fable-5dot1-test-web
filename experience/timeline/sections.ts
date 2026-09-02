@@ -16,13 +16,13 @@ export type SectionDef = {
 
 export const sectionDefs: readonly SectionDef[] = [
   { id: "intro", length: 100, aing: "enter", label: "시작" },
-  { id: "career", length: 180, aing: "point", label: "경력" },
-  { id: "zivo", length: 260, aing: "idle", label: "ZIVO" },
-  { id: "loop", length: 320, aing: "type", label: "고치는 과정" },
-  { id: "studio", length: 300, aing: "idle", label: "스튜디오" },
-  { id: "ai", length: 160, aing: "think", label: "AI" },
-  { id: "review", length: 160, aing: "review", label: "검수" },
-  { id: "result", length: 140, aing: "celebrate", label: "결과" },
+  { id: "career", length: 140, aing: "point", label: "경력" },
+  { id: "zivo", length: 220, aing: "idle", label: "ZIVO" },
+  { id: "loop", length: 280, aing: "type", label: "고치는 과정" },
+  { id: "studio", length: 260, aing: "idle", label: "스튜디오" },
+  { id: "ai", length: 130, aing: "think", label: "AI" },
+  { id: "review", length: 130, aing: "review", label: "검수" },
+  { id: "result", length: 120, aing: "celebrate", label: "결과" },
 ];
 
 export const sectionIndex = Object.fromEntries(sectionDefs.map((s, i) => [s.id, i])) as Record<SectionId, number>;

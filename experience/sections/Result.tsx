@@ -10,7 +10,7 @@ export function Result() {
   return (
     <Section id="result" label="마무리">
       <div className="result kr panel" style={{ maxWidth: 820, margin: "0 auto" }}>
-        <p className="eyebrow">Result</p>
+        <p className="eyebrow">마무리</p>
         <h2 className="h-display">그래서 박상욱, 쓸 만했을까요?</h2>
         <p className="lead" style={{ maxWidth: 560, margin: "0 auto 8px" }}>
           {howIWork.closing[0]} {howIWork.closing[1]}

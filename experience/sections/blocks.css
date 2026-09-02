@@ -3,6 +3,8 @@
 .intro-points li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; font-size: 15px; line-height: 1.5; }
 .intro-points b { color: var(--ink); font-weight: 700; white-space: nowrap; }
 .intro-points span { color: var(--muted); }
+/* 제목 다음으로 먼저 읽히는 한 줄이라 본문(.lead)보다 진하고 크게 */
+.intro-summary { font-size: clamp(16px, 1.2vw, 18px); font-weight: 700; line-height: 1.55; color: var(--ink); margin: 0 0 12px; }
 .intro-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
 .intro-name { font-size: 13px; color: var(--muted); margin: 0; }
 .intro-name b { color: var(--ink); }
@@ -104,7 +106,8 @@
 /* ── Studio tour ── */
 .tour-card { max-width: 480px; }
 .tour-stops { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
-.tour-stops button { min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; }
+/* 손가락으로 누르는 탭이라 44px 아래로 내리지 않는다 */
+.tour-stops button { min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: #fff; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; }
 .tour-stops button[aria-current="true"] { border-color: var(--ink); color: var(--ink); background: var(--soft); }
 .tour-points { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
 .tour-points li { font-size: 14px; line-height: 1.5; color: var(--muted); }
@@ -220,9 +223,6 @@
   /* Studio */
   .tour-card .lead { display: none; }
   .tour-points li { font-size: 13px; }
-  /* 손가락으로 누르는 탭이라 44px 아래로 내리지 않는다 */
-  .tour-stops button { min-height: 44px; }
-
   /* AI: 소개 문단은 접고 카드·칩·메모를 압축 */
   #ai .lead { display: none; }
   .cards { gap: 8px; margin: 6px 0; }
@@ -260,6 +260,7 @@
 
   /* Intro: 첫 화면도 잘리지 않게 */
   .intro-copy.panel .h-display { font-size: clamp(26px, 7.4vw, 32px); margin-bottom: 12px; }
+  .intro-summary { font-size: 14.5px; line-height: 1.45; margin-bottom: 8px; }
   .intro-copy .lead { font-size: 13.5px; margin-bottom: 10px; }
   .intro-points { gap: 6px; margin-bottom: 14px; }
   .intro-points li { font-size: 13.5px; line-height: 1.45; }

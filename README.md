@@ -31,6 +31,7 @@ bun run build && bun run start
 ## Higgsfield 에셋 구조
 
 ```
+public/screens/          실제 ZIVO 백오피스·이용자용 웹 캡처 (3D TV · 모니터 텍스처)
 public/aing/
   rest.png              기준 포즈 (Nano Banana 2 Lite, 1 credit) — 포스터 · 로딩 전 이미지
   00_idle … 10_goodbye  .webm (VP9 alpha) + .mov (HEVC alpha) + .png (첫 프레임)

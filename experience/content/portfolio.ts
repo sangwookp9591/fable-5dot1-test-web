@@ -8,6 +8,8 @@ export const profile = {
   nameEn: "Sangwook Park",
   role: "Frontend 중심 Full-stack Developer",
   roleSub: "Backend · Infra · AI/AX",
+  /** 화면에 보여주는 한국어 직함. 영문 직함(role/roleSub)은 이력 표기용으로만 남긴다. */
+  roleKr: "화면을 중심으로 서버·배포·AI까지 맡는 개발자",
   period: "2019–2026",
   email: "sangwookp9591@gmail.com",
   github: "https://github.com/sangwookp9591",
@@ -19,11 +21,13 @@ export const profile = {
 } as const;
 
 export const hero = {
-  eyebrow: "Hello · This is what I built",
+  eyebrow: "박상욱 · Sangwook Park",
   title: ["그래서 뭐 만들었냐고요?", "바로 보여드릴게요."],
+  /** 제목 바로 아래 한 줄. 사람과 대표 결과를 3초 안에 보여준다. */
+  summary: "화면에서 시작해 서버·배포·AI까지. 14개 언어 서비스를 9개월 동안 만들고 운영했습니다.",
   body:
     "프론트엔드로 시작했는데, 하다 보니 서버도 보고 배포도 하고 AI도 붙이고 있었습니다. 문제가 생기면 제 담당인지부터 따지기보다 어디서 꼬였는지부터 찾아갑니다.",
-  cta: "바로 보기",
+  cta: "만든 것 보기",
   points: [
     { n: "01", t: "화면만 만들진 않았습니다", d: "API, DB, 배포까지 필요하면 직접 봤습니다." },
     { n: "02", t: "잘 되는 건 기본이고", d: "두 번 눌렀을 때, 끊겼을 때, 다시 시도했을 때도 확인합니다." },
@@ -32,7 +36,7 @@ export const hero = {
 } as const;
 
 export const career = {
-  eyebrow: "Career at a glance",
+  eyebrow: "경력 한눈에",
   title: "처음엔 프론트엔드였습니다. 지금은 이것저것 다 봅니다.",
   body:
     "작은 팀에서 서비스를 만들다 보니 화면만 보고 있을 수가 없었습니다. API도 보고, DB도 보고, 배포도 하다 보니 자연스럽게 지금의 범위가 됐습니다.",
@@ -65,7 +69,7 @@ export const zivo = {
     d: "담당 저장소를 나누기보다 사용자가 막힌 지점부터 따라가며 필요한 곳을 고쳤습니다.",
   },
   userWeb: {
-    eyebrow: "Implemented product · User web",
+    eyebrow: "만든 것 · 이용자용 웹",
     title: "말로만 설명하면 재미없으니까, 실제 화면부터 보여드릴게요.",
     body: "검색으로 들어온 해외 사용자가 앱 설치 없이 병원·숙소를 찾고 주문과 결제까지 이어갈 수 있는 웹입니다.",
     link: "https://ai-ng.co.kr/zivo/app/index.html",
@@ -78,7 +82,7 @@ export const zivo = {
     ],
   },
   i18n: {
-    eyebrow: "14 languages · Web from zero to operation",
+    eyebrow: "14개 언어 · 설계부터 운영까지",
     title: "14개 언어, 번역만 붙이면 끝일 줄 알았습니다.",
     body: "막상 해보니 검색 노출도 언어별로 달라야 했고, 캐시가 다른 언어와 섞여서도 안 됐습니다. 그래서 언어를 쿠키에 숨기지 않고 URL 자체에 넣었습니다.",
     steps: [
@@ -95,7 +99,7 @@ export const zivo = {
     },
   },
   backOffice: {
-    eyebrow: "Implemented product · Back office",
+    eyebrow: "만든 것 · 백오피스",
     title: "이용자 화면만 만든 건 아닙니다. 운영 화면도 157개.",
     body: "파트너, 관리자, 직원이 같은 서비스를 서로 다른 방식으로 사용합니다. 화면마다 사용법이 달라지지 않도록 공통 구조를 만들고, 개발자를 부르지 않아도 직접 처리할 수 있는 기능을 늘렸습니다.",
     link: "https://ai-ng.co.kr/zivo/admin/index.html",
@@ -107,7 +111,7 @@ export const zivo = {
     ],
   },
   backend: {
-    eyebrow: "Backend restructuring",
+    eyebrow: "서버 구조 바꾸기",
     title: "야간 배치 하나가 낮의 API까지 느리게 만들지 않도록.",
     body: "배치, 워커, API가 한 실행 구조를 공유하며 장애 영향이 함께 번지던 흐름을 나눴습니다.",
     before: { t: "단일 실행 구조", d: "API · Worker · Batch", sub: "하나의 지연이 전체로 확산" },
@@ -125,7 +129,7 @@ export const zivo = {
 } as const;
 
 export const yeogigage = {
-  eyebrow: "Previous product · 여기가게",
+  eyebrow: "이전 프로젝트 · 여기가게",
   title: "주변 가게에서 찍고, 기다림 없이 넘겨보는 맛집 숏폼 앱.",
   body: "앱의 처음부터 끝까지 만들고 파트너센터 기능도 개발했습니다. 촬영 위치 확인부터 업로드, 영상 변환과 재생까지 한 흐름으로 최적화했습니다.",
   flow: ["위치 권한 확인", "현재 가게 선택", "촬영 동의", "영상 업로드"],

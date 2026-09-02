@@ -12,11 +12,23 @@ export function Zivo() {
   const barRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [phase, setPhase] = useState<0 | 1>(0);
   const [scrollT, setScrollT] = useState(0); // 슬라이더 스크롤 값 (0..1)
-  const [userT, setUserT] = useState<number | null>(null);
+  /** 사용자가 직접 끈 값과, 끌던 순간의 스크롤 값 */
+  const [drag, setDrag] = useState<{ user: number; scroll: number } | null>(null);
   const surprised = useRef(false);
   const reduced = useExperience((s) => s.caps.reducedMotion);
 
+  // 움직임 줄이기: 스크롤로 숫자를 키우지 않고 최종 값을 바로 보여준다
+  useEffect(() => {
+    if (!reduced) return;
+    zivo.stats.forEach((s, i) => {
+      const el = statRefs.current[i];
+      if (el) el.textContent = String(s.value);
+      barRefs.current[i]?.style.setProperty("--t", "1");
+    });
+  }, [reduced]);
+
   useSectionFrame("zivo", (t) => {
+    if (reduced) return; // 최종 상태는 위 effect 가 한 번만 그린다
     // Phase A: 숫자 카운트업 (0.05~0.4)
     const a = remap(t, 0.05, 0.4);
     const eased = a >= 0.995 ? 1 : 1 - Math.pow(1 - a, 3);
@@ -31,8 +43,11 @@ export function Zivo() {
     setPhase((p) => (t >= 0.42 ? 1 : 0) === p ? p : t >= 0.42 ? 1 : 0);
   });
 
-  // 사용자가 드래그한 값이 있으면 그걸 우선, 스크롤이 더 진행되면 다시 스크롤이 이긴다
-  const value = userT === null ? scrollT : Math.max(userT, scrollT);
+  // 움직임 줄이기면 스크롤을 기다리지 않고 마지막 단계를 바로 보여준다
+  const view: 0 | 1 = reduced ? 1 : phase;
+  // 스크롤이 멈춰 있는 동안만 드래그한 값이 이긴다. 스크롤이 조금이라도 움직이면 값의 주인은 다시 스크롤.
+  const base = reduced ? 1 : scrollT;
+  const value = drag && Math.abs(base - drag.scroll) < 0.03 ? drag.user : base;
 
   useEffect(() => {
     if (value > 0.5 && !surprised.current) {
@@ -49,9 +64,9 @@ export function Zivo() {
       <div className="col-left kr panel">
         <p className="eyebrow">{zivo.eyebrow}</p>
         <h2 className="h-section">{zivo.title}</h2>
-        <p className="lead" style={{ marginBottom: 8 }} hidden={phase === 1}>{zivo.body}</p>
+        <p className="lead" style={{ marginBottom: 8 }} hidden={view === 1}>{zivo.body}</p>
 
-        <div className="stats" role="list" aria-label="ZIVO 숫자" data-compact={phase === 1 ? "" : undefined}>
+        <div className="stats" role="list" aria-label="ZIVO 숫자" data-compact={view === 1 ? "" : undefined}>
           {zivo.stats.map((s, i) => (
             <div className="stat" role="listitem" key={s.label} ref={(el) => { barRefs.current[i] = el; }}>
               <div className="stat-v">
@@ -64,11 +79,11 @@ export function Zivo() {
           ))}
         </div>
 
-        <p className="lead" style={{ fontSize: 14, margin: "14px 0 0" }} hidden={phase === 1}>
+        <p className="lead" style={{ fontSize: 14, margin: "14px 0 0" }} hidden={view === 1}>
           {zivo.quote.t} {zivo.quote.d}
         </p>
 
-        <div className={`i18n ${phase ? "on" : ""}`} aria-live="off" hidden={phase === 0}>
+        <div className={`i18n ${view ? "on" : ""}`} aria-live="off" hidden={view === 0}>
           <p className="eyebrow" style={{ marginTop: 18 }}>{zivo.i18n.eyebrow}</p>
           <h3 className="h-section" style={{ fontSize: "clamp(18px, 1.7vw, 22px)", marginBottom: 8 }}>{zivo.i18n.title}</h3>
           <p className="lead" style={{ fontSize: 14, marginBottom: 8 }}>{zivo.i18n.body}</p>
@@ -95,7 +110,7 @@ export function Zivo() {
             min={0}
             max={1000}
             value={Math.round(value * 1000)}
-            onChange={(e) => setUserT(Number(e.target.value) / 1000)}
+            onChange={(e) => setDrag({ user: Number(e.target.value) / 1000, scroll: base })}
             aria-label="언어 주소 구조 전환: 쿠키 방식에서 URL 방식으로"
             aria-valuetext={value < 0.5 ? zivo.i18n.before.t : zivo.i18n.after.t}
             style={{ ["--t" as string]: value }}

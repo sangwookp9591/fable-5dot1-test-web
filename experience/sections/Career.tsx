@@ -18,7 +18,8 @@ export function Career() {
           {career.items.map((c, i) => {
             const hist = quality.history.find((h) => h.years.includes(c.company.replace(/[㈜()]/g, "").slice(0, 3)));
             return (
-              <li key={c.company} className={`board-row ${i < step ? "on" : ""}`} style={{ ["--i" as string]: i }}>
+              // 켜진 줄만 탭으로 잡아 상세(.board-more)를 키보드로도 펼칠 수 있게 한다
+              <li key={c.company} className={`board-row ${i < step ? "on" : ""}`} tabIndex={i < step ? 0 : undefined} style={{ ["--i" as string]: i }}>
                 <div className="board-years">{c.years}</div>
                 <div className="board-main">
                   <div className="board-company">{c.company}</div>
