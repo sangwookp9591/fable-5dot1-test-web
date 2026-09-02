@@ -23,7 +23,7 @@ export function Ai() {
           </div>
           <div className="chips" aria-label="순서">
             {ai.loop.map((l, i) => (
-              <span key={l} style={{ opacity: step >= 2 || i === 0 ? 1 : 0.35, transition: `opacity var(--dur-base) ${i * 80}ms` }}>
+              <span key={l} className={step >= 2 || i === 0 ? "on" : ""} style={{ transitionDelay: `${i * 80}ms` }}>
                 {l}
               </span>
             ))}

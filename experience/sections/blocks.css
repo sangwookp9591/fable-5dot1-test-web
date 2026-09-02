@@ -126,7 +126,8 @@
 .card.reveal { opacity: 0; transform: translateY(10px); transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out); transition-delay: calc(var(--i) * 70ms); }
 .card.reveal.on { opacity: 1; transform: none; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 800; font-size: 14px; }
-.chips span { background: var(--ink); color: #fff; border-radius: 999px; padding: 6px 12px; }
+.chips span { background: #fff; color: var(--muted); border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 12px; transition: background var(--dur-base), color var(--dur-base), border-color var(--dur-base); }
+.chips span.on { background: var(--ink); color: #fff; border-color: var(--ink); }
 .chips i { color: var(--muted); font-style: normal; }
 .site-note { margin-top: 12px; background: var(--blue-soft); border-radius: 14px; padding: 14px 16px; font-size: 14px; line-height: 1.55; color: var(--ink); }
 .site-note b { display: block; margin-bottom: 4px; }
