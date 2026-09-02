@@ -1,0 +1,17 @@
+# Cloudflare Pages 캐시 규칙.
+# next.config.ts 의 headers() 는 output: "export" 에서는 적용되지 않으므로 여기서 지정한다.
+
+/aing/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/models/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/screens/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
