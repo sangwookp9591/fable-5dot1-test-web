@@ -62,7 +62,7 @@ experience/
 
 ## Performance result
 
-`docs/fable-experiment/06-performance.md` 참고. 측정은 프로덕션 빌드(`bun run start`)에서 Chrome DevTools 트레이스로 했다.
+프로덕션 빌드, Chrome DevTools 트레이스 (로컬): LCP 385 ms · CLS 0 · 스크롤 중 85~120 fps · Lighthouse 접근성 100 · Best Practices 100 · SEO 100. 자세한 값과 판단은 `docs/fable-experiment/06-performance.md`.
 
 ## 문서
 

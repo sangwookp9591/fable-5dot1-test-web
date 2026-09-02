@@ -31,7 +31,7 @@ Trade-off: 3D 청크를 첫 화면 뒤에 받아 방이 ~0.5초 뒤 페이드인
 
 ## 6차 · Accessibility — PASS
 
-- Lighthouse 접근성 96 → 배지·강조 글자 대비 4.5:1 이상으로 수정 (`--green-text` `--orange-text` `--blue-text`).
+- Lighthouse 접근성 96 → 배지·강조 글자·주황 버튼 대비 4.5:1 이상으로 수정 (`--green-text` `--orange-text` `--blue-text`) → 재측정 **100** (Best Practices 100 · SEO 100).
 - 키보드: 시작 버튼 → 섹션 dot nav(a11y label) → 정거장 탭(role=tablist) → 슬라이더(aria-valuetext) → 링크·버튼. 아잉 레이어는 `aria-hidden`, 3D 캔버스도 `aria-hidden`.
 - 터미널은 `role=log aria-live=polite`, 카운트업 숫자는 `sr-only` 로 최종값 제공.
 - `prefers-reduced-motion`: 영상 대신 정지 포스터, 카메라 즉시 이동, 포인터 반응 0, 스크롤 이동 `auto`. `?reduced=1` 로 강제 확인.
