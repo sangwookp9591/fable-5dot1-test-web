@@ -23,6 +23,8 @@ export type AingOverlayProps = {
 };
 
 type Buffer = 0 | 1;
+/** 컨테이너 기준 높이(px). 실제 크기는 transform: scale 로 맞춘다 */
+const BASE_H = 400;
 
 /**
  * Aing Overlay Engine.
@@ -143,8 +145,12 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   }, [state, useVideo, videoFailed]);
 
   const showVideo = useVideo && !videoFailed;
-  // 프레임 720 중 캐릭터 580 → 컨테이너 높이 = height / 0.805
+  // 컨테이너 크기는 고정(BASE_H)하고 transform: scale 로만 키운다 → 크기·위치 변화가 layout shift(CLS) 를 만들지 않는다.
+  // 프레임 720 중 캐릭터 580 → 프레임 높이 = height / 0.805
   const frameH = height / 0.805;
+  const scale = frameH / BASE_H;
+  // clip-path 는 컨테이너 로컬(스케일 전) 좌표
+  const clipLocal = clipPath ? clipPath.replace(/inset\(0 0 ([\d.]+)px 0\)/, (_, px) => `inset(0 0 ${(Number(px) / scale).toFixed(1)}px 0)`) : undefined;
 
   return (
     <div
@@ -154,14 +160,15 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
         position: "absolute",
         left: 0,
         bottom: 0,
-        height: frameH,
-        width: frameH * (16 / 9),
-        transform: `translate3d(calc(${x}vw - 50%), ${-bottom}vh, 0) ${flip ? "scaleX(-1)" : ""}`,
+        height: BASE_H,
+        width: BASE_H * (16 / 9),
+        transformOrigin: "50% 100%",
+        transform: `translate3d(calc(${x}vw - 50%), ${-bottom}vh, 0) scale(${scale.toFixed(4)}) ${flip ? "scaleX(-1)" : ""}`,
         transition: instant
           ? "opacity var(--dur-base) var(--ease-out)"
-          : `transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out), height var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out)`,
+          : `transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out)`,
         opacity: hidden ? 0 : 1,
-        clipPath,
+        clipPath: clipLocal,
         willChange: "transform, opacity",
         contain: "layout paint",
         pointerEvents: "none",
@@ -211,7 +218,8 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
             position: "absolute",
             left: "50%",
             bottom: "calc(80.5% + 8%)",
-            transform: `translateX(-50%) ${flip ? "scaleX(-1)" : ""}`,
+            transformOrigin: "50% 100%",
+            transform: `translateX(-50%) scale(${(1 / scale).toFixed(4)}) ${flip ? "scaleX(-1)" : ""}`,
           }}
         >
           <span key={line} className="aing-bubble-text">

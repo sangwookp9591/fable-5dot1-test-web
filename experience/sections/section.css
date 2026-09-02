@@ -44,10 +44,13 @@
   top: 0;
   height: 100svh;
   display: grid;
-  align-items: center;
-  padding: clamp(20px, 4vw, 64px);
+  /* 패널 높이가 단계마다 달라져도 위 모서리는 고정 → 재정렬로 인한 layout shift(CLS) 를 막는다 */
+  align-items: start;
+  padding: clamp(64px, 11vh, 120px) clamp(20px, 4vw, 64px) clamp(20px, 4vw, 64px);
   box-sizing: border-box;
 }
+/* 내용 높이가 바뀌지 않는 섹션은 가운데 정렬 */
+#intro .stage, #result .stage { align-items: center; }
 .stage-inner {
   width: 100%;
   max-width: 1280px;

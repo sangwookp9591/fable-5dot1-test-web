@@ -7,7 +7,8 @@
 | 지표 | 값 | 목표 | 판정 |
 |---|---|---|---|
 | LCP | 385 ms (TTFB 4 · load 8 · render delay 374) | < 2.0 s | PASS |
-| CLS | 0.00 | < 0.05 | PASS |
+| CLS (로드) | 0.00 | < 0.05 | PASS |
+| CLS (전체 스크롤 9초 누적, 페이지 내 PerformanceObserver) | 0.015 (처음 0.237 → 수정) | < 0.05 | PASS |
 | INP | 방문자 브라우저에서 실측 (검수 섹션에 표시). 자동 스크롤 + 클릭 테스트에서 long task 없음 | < 150 ms | PASS (측정 계속) |
 | 스크롤 중 FPS | 85 ~ 120 (120Hz 디스플레이, 7초 프로그램 스크롤 표본 8개) | 60 | PASS |
 
@@ -38,6 +39,14 @@ LCP 요소는 인트로 제목(텍스트). render delay 374ms 는 hydration + Pr
 - 모니터/포스터/바닥 텍스처는 캔버스에서 한 번 그림. 모니터는 섹션·단계 바뀔 때만 다시 그림
 - 아잉: 동시에 decode 되는 video 는 최대 2개(crossfade 중), 평시 1개. 가운데 클립은 880×720 crop
 - 60fps 값(`progress.*`) 은 React state 를 거치지 않음. 임계값을 지날 때만 setState
+
+## CLS 0.237 → 0.015
+
+전체 스크롤 중 누적 CLS 를 페이지 안에서 재보니 0.237 이었다. 원인 둘:
+1. sticky stage 가 `align-items: center` 라서 단계에 따라 패널 높이가 바뀌면(ZIVO 숫자→슬라이더, 투어 카드 교체) 패널 전체가 다시 가운데로 이동 → 큰 shift. → `align-items: start` 로 위 모서리를 고정 (내용 높이가 변하지 않는 intro/result 만 center).
+2. 아잉 컨테이너의 `height/width` 를 섹션마다 바꾸며 transition → layout. → 컨테이너 크기를 400px 로 고정하고 `transform: scale()` 로만 조절, 말풍선은 역스케일. 앵커 모드의 매 프레임 갱신도 transform 만 건드린다.
+
+남은 0.015 는 ZIVO 숫자 카드가 한 줄로 줄어드는 순간(0.007 × 2) 이다.
 
 ## 발견한 비용과 판단
 

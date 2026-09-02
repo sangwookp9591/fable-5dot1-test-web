@@ -35,3 +35,5 @@
 | `?no3d=1` `?novideo=1` `?reduced=1` | 정적 배경 / WebP / 정지 포스터. 콘솔 0건 |
 | 콘솔 (프로덕션 전체 스크롤) | error 0 · warning 0 |
 | Lighthouse desktop | A11y 96(대비 수정 후 재측정) · Best Practices 100 · SEO 100 |
+| 전체 스크롤 누적 CLS | 0.237 → stage 상단 고정 + 아잉 transform scale 로 0.015 (06-performance 참조) |
+| Lighthouse desktop 재측정 | A11y 100 · Best Practices 100 · SEO 100 |
