@@ -19,7 +19,7 @@ bun run build && bun run start
 
 | 기술                                              | 왜                                                                |
 | ----------------------------------------------- | ---------------------------------------------------------------- |
-| Three.js 0.182 + React Three Fiber 9 + drei 10  | 방(스튜디오)과 카메라 투어. WebGL. 오브젝트가 30개 남짓이라 WebGPU 는 이점이 없어 쓰지 않음     |
+| Three.js 0.182 + React Three Fiber 9 + drei 10  | 방 (스튜디오)과 카메라 투어. WebGL. 오브젝트가 30개 남짓이라 WebGPU 는 이점이 없어 쓰지 않음    |
 | GSAP ScrollTrigger                              | 섹션별 스크롤 진행도. 네이티브 스크롤 유지, hijacking 없음                           |
 | zustand                                         | 섹션·시작 여부 같은 이산 상태. 60fps 값은 `progress` 객체에 직접 기록                 |
 | WebM(VP9 alpha) + MOV(HEVC alpha)               | 아잉 오버레이. Safari 는 HEVC, 둘 다 안 되면 애니메이션 WebP                      |
