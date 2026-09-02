@@ -8,9 +8,9 @@
 |---|---|---|---|
 | LCP | 385 ms (TTFB 4 · load 8 · render delay 374) | < 2.0 s | PASS |
 | CLS (로드) | 0.00 | < 0.05 | PASS |
-| CLS (전체 스크롤 9초 누적, 페이지 내 PerformanceObserver) | 0.015 (처음 0.237 → 수정) | < 0.05 | PASS |
+| CLS (전체 스크롤 9초 누적, 페이지 내 PerformanceObserver) | 0.008 (처음 0.237 → 수정) | < 0.05 | PASS |
 | INP | 방문자 브라우저에서 실측 (검수 섹션에 표시). 자동 스크롤 + 클릭 테스트에서 long task 없음 | < 150 ms | PASS (측정 계속) |
-| 스크롤 중 FPS | 85 ~ 120 (120Hz 디스플레이, 7초 프로그램 스크롤 표본 8개) | 60 | PASS |
+| 스크롤 중 FPS | 평균 103, 표본 85 ~ 120 (120Hz 디스플레이, 9초 프로그램 스크롤) | 60 | PASS |
 
 LCP 요소는 인트로 제목(텍스트). render delay 374ms 는 hydration + Pretendard subset 폰트 swap. 네트워크가 느린 환경에서는 폰트 CSS(92 @font-face) 가 render-blocking 이 된다 → `font-display: swap` 으로 텍스트는 먼저 그려진다.
 
