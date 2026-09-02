@@ -166,7 +166,7 @@ export const ai = {
 } as const;
 
 export const quality = {
-  eyebrow: "Quality · 가끔부터 없애기",
+  eyebrow: "품질 · 가끔부터 없애기",
   title: "테스트가 가끔 실패했습니다. 그래서 ‘가끔’부터 없앴습니다.",
   body: "결제 기능에는 문제가 없었는데 자동 테스트는 가끔씩 실패했습니다. 시간을 더 기다리게 만드는 대신 왜 실패하는지 찾고, 반복해도 결과가 같도록 고쳤습니다.",
   steps: [
