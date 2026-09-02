@@ -23,3 +23,15 @@
 
 - "걸어나올 때 프레임이 끊기는 느낌" → `canplay` → `canplaythrough` 로 재생 시작 조건 강화, left/bottom → transform 이동, 캐시 예열
 - "배경 오브젝트가 현실과 너무 다름" → 원시 도형 → Kenney 가구 GLB + 그림자 + 나무 바닥 텍스처
+
+## 2차 (프로덕션 빌드 :3211, 자동화 검증)
+
+| 검증 | 결과 |
+|---|---|
+| 인트로 타임라인 (initScript 로 0.6s 간격 샘플) | 포스터 0~0.6s → enter 0.6~5.4s → idle. 대사 1 은 2.4~5.0s, 대사 2 는 5.2~8.4s |
+| 처음엔 대사가 안 나왔다 | 인트로 effect 가 ref 로 "한 번만" 을 판단해 StrictMode 이중 실행에서 타이머가 지워짐 → enter 종료/섹션 이탈 시점에 플래그를 세우는 idempotent 구조로 변경 |
+| 섹션 점프 후 아잉 버퍼 (career → intro → loop → zivo) | point → idle → type → idle. 활성 video 1개만 opacity 1, 나머지 src 비움 |
+| 1.5초 역방향 전체 스크롤 후 3초 | 섹션 = 시작, 아잉 = idle |
+| `?no3d=1` `?novideo=1` `?reduced=1` | 정적 배경 / WebP / 정지 포스터. 콘솔 0건 |
+| 콘솔 (프로덕션 전체 스크롤) | error 0 · warning 0 |
+| Lighthouse desktop | A11y 96(대비 수정 후 재측정) · Best Practices 100 · SEO 100 |

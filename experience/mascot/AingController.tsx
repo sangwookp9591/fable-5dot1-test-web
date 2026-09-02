@@ -71,21 +71,24 @@ export function AingController() {
   }, []);
 
   // 인트로: 처음 들어오면 등장 → 대사 2개. [바로 보기] 를 눌러도 걷는 클립은 끊지 않고 끝나면 idle 로.
-  const entered = useRef(false);
+  // introDone 은 enter 클립이 끝났거나 인트로를 떠났을 때 true. (effect 는 idempotent — StrictMode 이중 실행에도 안전)
+  const introDone = useRef(false);
   useEffect(() => {
-    if (section !== "intro") return;
-    if (!entered.current) {
-      entered.current = true;
-      setState("enter");
-      const t1 = window.setTimeout(() => say(aingLines.intro[0], 2600), 2400);
-      const t2 = window.setTimeout(() => say(aingLines.intro[1], 3200), 5200);
-      return () => {
-        window.clearTimeout(t1);
-        window.clearTimeout(t2);
-      };
+    if (section !== "intro") {
+      introDone.current = true;
+      return;
     }
-    // 다른 섹션에서 돌아온 경우
-    setState((s) => (s === "leave" || s === "enter" ? s : "idle"));
+    if (introDone.current) {
+      setState((s) => (s === "leave" ? s : "idle"));
+      return;
+    }
+    setState("enter");
+    const t1 = window.setTimeout(() => say(aingLines.intro[0], 2600), 2400);
+    const t2 = window.setTimeout(() => say(aingLines.intro[1], 3200), 5200);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, [section, say]);
 
   // 섹션 진입 시 기본 상태 + 대사
@@ -156,6 +159,7 @@ export function AingController() {
   }, [section, say]);
 
   const onEnded = useCallback((s: AingState) => {
+    if (s === "enter") introDone.current = true;
     if (s === "leave") return; // 퇴장 후엔 그대로 (역스크롤 시 섹션 effect 가 복귀시킴)
     setState("idle");
   }, []);
