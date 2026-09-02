@@ -9,7 +9,10 @@
 bun install
 bun run dev        # http://localhost:3000
 bun run build && bun run start
+bun run check      # tsc + eslint + bun test
 ```
+
+검증 보조: `scripts/review/codex-review.sh <prompt.md> <out.md>` 로 Codex CLI(GPT-5.6 Sol, read-only)에 코드·스크린샷 리뷰를 받을 수 있다. 실제로 받은 리뷰와 반영 판정은 `docs/fable-experiment/10-external-review.md`.
 
 - Bun 1.3 · Next.js 16.3 (App Router, Turbopack) · React 19.2
 - 정적 프리렌더. 서버 코드 없음. 배포는 어떤 Node/Bun 호스팅이든 가능
