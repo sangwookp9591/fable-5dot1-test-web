@@ -21,6 +21,36 @@ class SceneBoundary extends Component<{ onError: () => void; children: ReactNode
   }
 }
 
+/** WebGL context 유실: 복구를 기다리고, 캔버스가 아직 살아있는데 3초 안에 못 돌아오면 정적 배경으로 */
+function ContextGuard() {
+  const { gl, invalidate } = useThree();
+  const failScene = useExperience((s) => s.failScene);
+  useEffect(() => {
+    const el = gl.domElement;
+    let timer: number | null = null;
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (el.isConnected) failScene();
+      }, 3000);
+    };
+    const onRestored = () => {
+      if (timer) window.clearTimeout(timer);
+      timer = null;
+      invalidate();
+    };
+    el.addEventListener("webglcontextlost", onLost);
+    el.addEventListener("webglcontextrestored", onRestored);
+    return () => {
+      if (timer) window.clearTimeout(timer);
+      el.removeEventListener("webglcontextlost", onLost);
+      el.removeEventListener("webglcontextrestored", onRestored);
+    };
+  }, [gl, invalidate, failScene]);
+  return null;
+}
+
 /** 스크롤 → 카메라. demand 렌더: 움직이는 동안만 다음 프레임을 요청한다. */
 function CameraRig() {
   const { camera, invalidate } = useThree();
@@ -101,22 +131,11 @@ export function StudioScene() {
           camera={{ position: [2.3, 1.75, 3.4], fov: 42, near: 0.1, far: 30 }}
           gl={{ antialias: true, alpha: false, powerPreference: "high-performance", stencil: false }}
           shadows={mobile ? false : "soft"}
-          onCreated={({ gl, scene, invalidate }) => {
+          onCreated={({ gl, scene }) => {
             gl.setClearColor("#f6f1e8");
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1.05;
             scene.fog = new THREE.Fog("#f6f1e8", 6, 12);
-            // WebGL context 유실: 복구를 기다리고, 3초 안에 못 돌아오면 정적 배경으로
-            let lostTimer: number | null = null;
-            gl.domElement.addEventListener("webglcontextlost", (e) => {
-              e.preventDefault();
-              lostTimer = window.setTimeout(() => failScene(), 3000);
-            });
-            gl.domElement.addEventListener("webglcontextrestored", () => {
-              if (lostTimer) window.clearTimeout(lostTimer);
-              lostTimer = null;
-              invalidate();
-            });
           }}
           style={{ position: "absolute", inset: 0 }}
         >
@@ -140,6 +159,7 @@ export function StudioScene() {
           <directionalLight position={[2.5, 3, 3]} intensity={0.3} color="#e6f0ff" />
           <Room onReady={onReady} />
           <CameraRig />
+          <ContextGuard />
         </Canvas>
       </SceneBoundary>
     </div>

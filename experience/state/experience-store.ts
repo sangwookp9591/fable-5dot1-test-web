@@ -34,6 +34,9 @@ type ExperienceState = {
   soundOn: boolean;
   /** Three.js 로딩/실행 실패 → 정적 배경으로 대체 */
   sceneFailed: boolean;
+  /** 고치는 과정 섹션의 현재 단계 (모니터 화면과 동기화) */
+  loopStep: number;
+  setLoopStep: (n: number) => void;
   start: () => void;
   setSection: (s: SectionId) => void;
   setCaps: (c: Partial<Capabilities>) => void;
@@ -47,6 +50,8 @@ export const useExperience = create<ExperienceState>((set) => ({
   caps: { webgl: true, reducedMotion: false, mobile: false, webmAlpha: true, hevcAlpha: false, saveData: false },
   soundOn: false,
   sceneFailed: false,
+  loopStep: 0,
+  setLoopStep: (loopStep) => set((s) => (s.loopStep === loopStep ? s : { loopStep })),
   start: () => set({ started: true }),
   setSection: (section) => set((s) => (s.section === section ? s : { section })),
   setCaps: (c) => set((s) => ({ caps: { ...s.caps, ...c } })),

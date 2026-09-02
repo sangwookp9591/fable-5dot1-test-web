@@ -7,6 +7,7 @@ import { warmClip } from "./preload";
 import { progress, useExperience, SECTIONS, type SectionId } from "@/experience/state/experience-store";
 import { sectionDefs } from "@/experience/timeline/sections";
 import { aingLines } from "@/experience/content/portfolio";
+import { anchors } from "@/experience/scene/anchors";
 
 /** 섹션 컴포넌트가 아잉에게 일시적 반응을 요청할 때 쓰는 이벤트 */
 export type AingCue = { state: AingState; line?: string | null; hold?: number };
@@ -34,7 +35,7 @@ function placementFor(section: SectionId, mobile: boolean, vw: number): Placemen
     case "loop":
       return { x: 90, bottom: 3, height: h * 0.8 };
     case "studio":
-      return { x: 14, bottom: 6, height: h * 0.9, flip: true };
+      return { x: 8, bottom: 3, height: h * 0.7, flip: true };
     case "ai":
       return { x: 86, bottom: 4, height: h };
     case "review":
@@ -48,6 +49,7 @@ export function AingController() {
   const section = useExperience((s) => s.section);
   const started = useExperience((s) => s.started);
   const caps = useExperience((s) => s.caps);
+  const sceneFailed = useExperience((s) => s.sceneFailed);
   const [state, setState] = useState<AingState>("idle");
   const [line, setLine] = useState<string | null>(null);
   const [vw, setVw] = useState(1440);
@@ -154,19 +156,50 @@ export function AingController() {
     setState("idle");
   }, []);
 
+  // 책상 뒤 자리: 3D 앵커를 따라 위치·크기·가림선을 매 프레임 갱신 (데스크톱, 3D 살아있을 때만)
+  const useAnchor = section === "loop" && !caps.mobile && !sceneFailed && caps.webgl;
+  const [anch, setAnch] = useState<{ x: number; bottom: number; height: number; clip: number } | null>(null);
+  useEffect(() => {
+    if (!useAnchor) {
+      setAnch(null);
+      return;
+    }
+    let raf = 0;
+    const tick = () => {
+      const a = anchors.deskSeat;
+      if (a && a.ok && a.h > 40) {
+        const W = window.innerWidth;
+        const H = window.innerHeight;
+        const frameH = a.h / 0.805;
+        const bottomPx = a.y + (frameH * 56) / 720; // 프레임 아래 여백만큼 컨테이너가 더 내려감
+        const clip = Number.isNaN(a.cut) ? 0 : Math.max(0, bottomPx - a.cut);
+        setAnch((prev) => {
+          const next = { x: (a.x / W) * 100, bottom: ((H - bottomPx) / H) * 100, height: a.h, clip };
+          return prev && Math.abs(prev.x - next.x) < 0.02 && Math.abs(prev.bottom - next.bottom) < 0.02 && Math.abs(prev.height - next.height) < 0.5 && Math.abs(prev.clip - next.clip) < 0.5 ? prev : next;
+        });
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [useAnchor]);
+
   const p = placementFor(section, caps.mobile, vw);
-  const hidden = p.hidden || (state === "leave" && false);
+  const anchored = useAnchor && anch;
+  const hidden = p.hidden;
 
   return (
     <div className="aing-layer" aria-hidden="true">
       <AingOverlay
         state={state}
-        x={p.x}
-        bottom={p.bottom}
-        height={p.height}
+        x={anchored ? anch.x : p.x}
+        bottom={anchored ? anch.bottom : p.bottom}
+        height={anchored ? anch.height : p.height}
         flip={p.flip}
         line={line}
         hidden={hidden}
+        clipPath={anchored && anch.clip > 0 ? `inset(0 0 ${anch.clip.toFixed(1)}px 0)` : undefined}
+        instant={!!anchored}
         onEnded={onEnded}
       />
     </div>

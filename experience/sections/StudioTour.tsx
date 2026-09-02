@@ -49,7 +49,7 @@ export const TOUR_STOPS = [
   },
 ] as const;
 
-const THRESH = [0.3, 0.55, 0.8] as const;
+const THRESH = [0.2, 0.47, 0.73] as const;
 
 export function StudioTour() {
   const step = useSteps("studio", THRESH);
@@ -62,7 +62,7 @@ export function StudioTour() {
     const rect = el.getBoundingClientRect();
     const top = window.scrollY + rect.top;
     const usable = el.offsetHeight - window.innerHeight;
-    const targets = [0.12, 0.42, 0.67, 0.9];
+    const targets = [0.04, 0.3, 0.57, 0.82];
     window.scrollTo({ top: top + usable * targets[i], behavior: reduced ? "auto" : "smooth" });
   };
 

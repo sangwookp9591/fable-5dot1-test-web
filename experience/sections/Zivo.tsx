@@ -19,7 +19,7 @@ export function Zivo() {
   useSectionFrame("zivo", (t) => {
     // Phase A: 숫자 카운트업 (0.05~0.4)
     const a = remap(t, 0.05, 0.4);
-    const eased = 1 - Math.pow(1 - a, 3);
+    const eased = a >= 0.995 ? 1 : 1 - Math.pow(1 - a, 3);
     zivo.stats.forEach((s, i) => {
       const el = statRefs.current[i];
       if (el) el.textContent = String(Math.round(s.value * eased));
@@ -46,12 +46,12 @@ export function Zivo() {
 
   return (
     <Section id="zivo" label="ZIVO 에서 만든 것">
-      <div className="col-left kr">
+      <div className="col-left kr panel">
         <p className="eyebrow">{zivo.eyebrow}</p>
         <h2 className="h-section">{zivo.title}</h2>
-        <p className="lead" style={{ marginBottom: 8 }}>{zivo.body}</p>
+        <p className="lead" style={{ marginBottom: 8 }} hidden={phase === 1}>{zivo.body}</p>
 
-        <div className="stats" role="list" aria-label="ZIVO 숫자">
+        <div className="stats" role="list" aria-label="ZIVO 숫자" data-compact={phase === 1 ? "" : undefined}>
           {zivo.stats.map((s, i) => (
             <div className="stat" role="listitem" key={s.label} ref={(el) => { barRefs.current[i] = el; }}>
               <div className="stat-v">
@@ -64,7 +64,11 @@ export function Zivo() {
           ))}
         </div>
 
-        <div className={`i18n ${phase ? "on" : ""}`} aria-live="off">
+        <p className="lead" style={{ fontSize: 14, margin: "14px 0 0" }} hidden={phase === 1}>
+          {zivo.quote.t} {zivo.quote.d}
+        </p>
+
+        <div className={`i18n ${phase ? "on" : ""}`} aria-live="off" hidden={phase === 0}>
           <p className="eyebrow" style={{ marginTop: 18 }}>{zivo.i18n.eyebrow}</p>
           <h3 className="h-section" style={{ fontSize: "clamp(18px, 1.9vw, 24px)" }}>{zivo.i18n.title}</h3>
           <p className="lead" style={{ fontSize: 14, marginBottom: 12 }}>{zivo.i18n.body}</p>

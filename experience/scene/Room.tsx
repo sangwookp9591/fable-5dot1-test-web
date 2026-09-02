@@ -2,12 +2,13 @@
 
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import { progress, useExperience } from "@/experience/state/experience-store";
 import { useScreenTexture } from "./Screen";
 import { Model } from "./Model";
 import { makePlasterTexture, makeWoodTexture } from "./textures";
+import { anchors } from "./anchors";
 
 /*
  * 아잉 스튜디오 — 실제 가구(Kenney Furniture Kit, CC0)로 꾸린 작은 작업실.
@@ -41,6 +42,28 @@ function useMats() {
       ledOff: new THREE.MeshStandardMaterial({ color: "#3a4358", emissive: "#3a4358", emissiveIntensity: 0.2 }),
     };
   }, []);
+}
+
+/** 월드 좌표를 화면 px 로 투영해 anchors 에 기록 (아잉이 실제 자리에 앉는 데 사용) */
+function Anchor({ id, feet, height, cutY }: { id: string; feet: [number, number, number]; height: number; cutY?: number }) {
+  const { camera, size } = useThree();
+  const v = useMemo(() => new THREE.Vector3(), []);
+  useFrame(() => {
+    const toPx = (x: number, y: number, z: number) => {
+      v.set(x, y, z).project(camera);
+      return { x: ((v.x + 1) / 2) * size.width, y: ((1 - v.y) / 2) * size.height, front: v.z < 1 };
+    };
+    const f = toPx(...feet);
+    const t = toPx(feet[0], feet[1] + height, feet[2]);
+    const c = cutY !== undefined ? toPx(feet[0], cutY, feet[2]) : null;
+    const a = anchors[id] ?? (anchors[id] = { x: 0, y: 0, h: 0, cut: NaN, ok: false });
+    a.x = f.x;
+    a.y = f.y;
+    a.h = Math.max(0, f.y - t.y);
+    a.cut = c ? c.y : NaN;
+    a.ok = f.front;
+  });
+  return null;
 }
 
 /** 모니터 화면: Kenney computerScreen 위에 우리 캔버스 텍스처를 덧댄다 */
@@ -84,26 +107,25 @@ function WallBoard({ mats }: { mats: ReturnType<typeof useMats> }) {
       if (!m) return;
       const target = t >= [0.12, 0.3, 0.48, 0.66][i] ? 1 : 0.12;
       m.scale.x = THREE.MathUtils.damp(m.scale.x, target, 6, 0.016);
-      m.position.x = 0.2 + (0.7 * m.scale.x) / 2 - 0.35 + 0.35 * m.scale.x - 0.35 * m.scale.x; // 왼쪽 정렬 유지
-      m.position.x = -0.1 + (0.7 * m.scale.x) / 2;
+      m.position.x = 0.12 + (0.7 * m.scale.x) / 2; // 라벨 오른쒽에서 시작, 왼쪽 정렬 유지
     });
   });
   const colors = [mats.orange, mats.blue, mats.green, mats.ink];
   return (
     <group position={[-0.3, 1.95, -2.47]}>
-      <RoundedBox args={[1.2, 0.68, 0.03]} radius={0.01} material={mats.paper} castShadow />
+      <RoundedBox args={[1.2, 0.68, 0.03]} radius={0.01} material={mats.paper} />
       <RoundedBox args={[1.24, 0.72, 0.02]} radius={0.01} position={[0, 0, -0.01]} material={mats.woodDark} />
       {[0, 1, 2, 3].map((i) => (
         <group key={i} position={[-0.42, 0.22 - i * 0.15, 0.02]}>
-          <mesh material={mats.dark} position={[0.0, 0, 0]}>
-            <boxGeometry args={[0.14, 0.05, 0.005]} />
+          <mesh material={mats.dark} position={[0.02, 0, 0]}>
+            <boxGeometry args={[0.16, 0.05, 0.005]} />
           </mesh>
           <mesh
             ref={(m) => {
               if (m) rows.current[i] = m;
             }}
             material={colors[i]}
-            position={[0.25, 0, 0]}
+            position={[0.16, 0, 0.004]}
             scale={[0.12, 1, 1]}
           >
             <boxGeometry args={[0.7, 0.05, 0.005]} />
@@ -220,7 +242,7 @@ function Poster({ mats }: { mats: ReturnType<typeof useMats> }) {
   }, []);
   return (
     <group position={[3.08, 1.7, -1.0]} rotation={[0, -Math.PI / 2, 0]}>
-      <RoundedBox args={[0.66, 0.86, 0.02]} radius={0.005} material={mats.woodDark} position={[0, 0, -0.005]} />
+      <RoundedBox args={[0.66, 0.86, 0.02]} radius={0.005} material={mats.woodDark} position={[0, 0, -0.015]} />
       <mesh>
         <planeGeometry args={[0.6, 0.8]} />
         <meshStandardMaterial map={tex} roughness={0.9} />
@@ -290,7 +312,7 @@ export function Room({ onReady }: { onReady: () => void }) {
         {/* ── 가구 (Kenney, 2x = m) ── */}
         <Model name="rugRounded" position={[-1.87, 0.002, 0.15]} scale={S} shadow={false} />
         <Model name="desk" position={[-1.03, 0, -1.72]} scale={S} />
-        <Model name="chairDesk" position={[-0.27, 0, -1.7]} rotation={[0, Math.PI, 0]} scale={S} />
+        <Model name="chairDesk" position={[-1.75, 0, -1.05]} rotation={[0, Math.PI * 1.25, 0]} scale={S} />
         <group position={[-0.75, 0.76, -2.3]}>
           <Model name="computerScreen" scale={S} />
           <MonitorScreen />
@@ -326,19 +348,21 @@ export function Room({ onReady }: { onReady: () => void }) {
         <Model name="cabinetTelevision" position={[-2.9, 0, -2.0]} scale={S} />
         <group position={[-2.1, 0.62, -2.28]}>
           <Model name="televisionModern" scale={S} />
-          <group position={[0, 0.2, 0.13]}>
+          <group position={[0, 0.5, 0.13]}>
             <TvTiles />
           </group>
         </group>
         <Model name="lampRoundFloor" position={[-1.25, 0, -2.2]} scale={S} />
-        <Model name="trashcan" position={[-1.35, 0, -1.4]} scale={S} />
+        <Model name="trashcan" position={[-1.3, 0, -1.9]} scale={S} />
         <Model name="pottedPlant" position={[2.85, 0, -1.9]} scale={S} />
         <Model name="plantSmall2" position={[-3.0, 1.05, -0.4]} rotation={[0, 0.4, 0]} scale={S} />
         {/* 아잉 자리: 라운지 체어 + 쿠션 */}
-        <Model name="loungeChair" position={[1.9, 0, -0.5]} rotation={[0, -0.6, 0]} scale={S} />
-        <Model name="pillow" position={[1.55, 0.4, -0.85]} rotation={[0.4, -0.6, 0]} scale={S} />
+        <Model name="loungeChair" position={[-2.3, 0, 0.9]} rotation={[0, 2.4, 0]} scale={S} />
+        <Model name="pillow" position={[-2.05, 0.4, 0.55]} rotation={[0.4, 2.4, 0]} scale={S} />
         <WallBoard mats={mats} />
         <Poster mats={mats} />
+        {/* 아잉이 책상 뒤에 앉는 자리 (모니터 오른쪽). 책상 윗면(0.78) 아래는 가려진다 */}
+        <Anchor id="deskSeat" feet={[0.2, 0.6, -2.1]} height={0.78} cutY={0.78} />
         <Ready onReady={onReady} />
       </Suspense>
       {mobile ? null : null}

@@ -21,6 +21,12 @@ export function preloadModels() {
 
 type Props = { name: ModelName; shadow?: boolean } & Omit<ThreeElements["group"], "children">;
 
+/** Kenney 기본 팔레트의 핑크(carpet) 를 스튜디오 톤(세이지)으로 바꾼다 */
+const RECOLOR: Record<string, string> = {
+  carpet: "#c9cbb8",
+  carpetDarker: "#a9ac98",
+};
+
 export function Model({ name, shadow = true, ...props }: Props) {
   const { scene } = useGLTF(modelUrl(name));
   const obj = useMemo(() => {
@@ -31,7 +37,11 @@ export function Model({ name, shadow = true, ...props }: Props) {
         m.castShadow = shadow;
         m.receiveShadow = true;
         const mat = m.material as THREE.MeshStandardMaterial;
-        if (mat && "roughness" in mat) mat.roughness = Math.max(mat.roughness, 0.7);
+        if (mat && "roughness" in mat) {
+          mat.roughness = Math.max(mat.roughness, 0.7);
+          const re = RECOLOR[mat.name];
+          if (re) mat.color.set(re);
+        }
       }
     });
     return c;

@@ -13,6 +13,7 @@ import { zivo, quality, career } from "@/experience/content/portfolio";
 export function useScreenTexture(): THREE.CanvasTexture {
   const section = useExperience((s) => s.section);
   const started = useExperience((s) => s.started);
+  const loopStep = useExperience((s) => s.loopStep);
   const invalidate = useThree((s) => s.invalidate);
 
   const { canvas, tex } = useMemo(() => {
@@ -77,7 +78,9 @@ export function useScreenTexture(): THREE.CanvasTexture {
       case "loop":
         ctx.fillStyle = "#131a2a";
         ctx.fillRect(0, 44, W, H - 44);
-        quality.steps[0].terminal.forEach((l) => lines.push({ t: l, w: 500, s: 22, c: l.startsWith("✗") ? "#ff7b72" : l.startsWith("✓") ? "#57d38c" : "#dfe6f3" }));
+        quality.steps[Math.min(loopStep, quality.steps.length - 1)].terminal.forEach((l) =>
+          lines.push({ t: l, w: 500, s: 26, c: l.startsWith("✗") ? "#ff7b72" : l.startsWith("✓") || l.startsWith("+") ? "#57d38c" : l.startsWith("-") ? "#ff7b72" : "#dfe6f3" }),
+        );
         break;
       case "studio":
         lines.push({ t: "ZIVO · 이용자용 웹", w: 800, s: 30 }, { t: "병원 · 택시 · 호텔 · eSIM · QR 주문", w: 600, s: 22, c: "#677084" }, { t: "앱 설치 없이 결제까지", w: 700, s: 24, c: "#ff641e" });
@@ -101,7 +104,7 @@ export function useScreenTexture(): THREE.CanvasTexture {
     }
     tex.needsUpdate = true;
     invalidate();
-  }, [section, started, canvas, tex, invalidate]);
+  }, [section, started, loopStep, canvas, tex, invalidate]);
 
   useEffect(() => () => tex.dispose(), [tex]);
   return tex;

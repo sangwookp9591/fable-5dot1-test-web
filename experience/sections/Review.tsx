@@ -41,11 +41,11 @@ export function Review() {
 
   return (
     <Section id="review" label="자기 검수">
-      <div className="col-left kr">
+      <div className="col-left kr review-panel">
         <div className="panel">
           <p className="eyebrow">Self review · 이 사이트 자체</p>
           <h2 className="h-section">다 만들었다고 끝이 아닙니다.</h2>
-          <p className="lead">직접 열어봅니다. 버튼도 눌러봅니다. 이상하면 다시 고칩니다. 아래는 이 사이트를 만들면서 실제로 돌린 검수입니다.</p>
+          <p className="lead">직접 열어봅니다. 버튼도 눌러봅니다. 이상하면 다시 고칩니다. 아래는 이 사이트에 실제로 돌린 검수입니다.</p>
           <ul className="review-board">
             {REVIEW_ITEMS.map((r) => (
               <li key={r.k}>
@@ -57,7 +57,7 @@ export function Review() {
               </li>
             ))}
           </ul>
-          <p className="eyebrow" style={{ marginTop: 14 }}>지금 이 브라우저에서 잰 값</p>
+          <p className="eyebrow" style={{ marginTop: 12, marginBottom: 6 }}>지금 이 브라우저에서 잰 값</p>
           <div className="vitals" role="list">
             <div className={`vital ${v.lcp === null ? "" : lcpGood ? "good" : "warn"}`} role="listitem">
               <div className="k">첫 큰 화면 (LCP)</div>

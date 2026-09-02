@@ -10,7 +10,7 @@ export function Career() {
   const step = useSteps("career", THRESH);
   return (
     <Section id="career" label="경력">
-      <div className="col-left kr">
+      <div className="col-left kr panel">
         <p className="eyebrow">{career.eyebrow}</p>
         <h2 className="h-section">{career.title}</h2>
         <p className="lead">{career.body}</p>

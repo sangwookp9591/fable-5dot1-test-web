@@ -5,10 +5,10 @@ export type CamKey = { pos: [number, number, number]; look: [number, number, num
 
 /** 섹션별 카메라. 이유 없이 날아다니지 않는다: 항상 방 안의 한 오브젝트를 본다. */
 export const CAMERA: Record<SectionId, CamKey> = {
-  intro: { pos: [1.7, 1.8, 3.1], look: [-1.3, 1.0, -1.9], fov: 42 }, // 방 전체, 책상이 오른쪽
-  career: { pos: [0.3, 1.65, 0.5], look: [-1.0, 1.75, -2.47], fov: 40 }, // 벽 보드(책상 위)
+  intro: { pos: [1.9, 2.0, 3.7], look: [-1.1, 0.95, -2.0], fov: 40 }, // 방 전체, 책상이 오른쪽
+  career: { pos: [0.5, 1.7, 1.1], look: [-1.05, 1.7, -2.47], fov: 40 }, // 벽 보드(책상 위)
   zivo: { pos: [0.55, 1.4, -0.1], look: [-1.0, 1.05, -2.3], fov: 40 }, // 모니터
-  loop: { pos: [-0.15, 1.25, -0.85], look: [-0.55, 1.05, -2.3], fov: 38 }, // 모니터 근접
+  loop: { pos: [0.2, 1.55, -0.1], look: [-0.05, 1.0, -2.2], fov: 38 }, // 책상 전체 + 아잉 자리
   studio: { pos: [0.7, 1.35, -0.2], look: [0.3, 0.95, -2.2], fov: 42 },
   ai: { pos: [0.3, 1.5, 0.3], look: [1.7, 1.35, -2.3], fov: 40 }, // 책장 피규어
   review: { pos: [-0.6, 1.25, -0.6], look: [-0.2, 0.95, -2.1], fov: 40 }, // 노트북
@@ -18,9 +18,9 @@ export const CAMERA: Record<SectionId, CamKey> = {
 /** 스튜디오 투어: 책상 → 벽 TV → 서버 랙·책장 → 노트북. 콘텐츠 카드가 오른쪽이므로 대상은 화면 왼쪽에 둔다 */
 export const TOUR: CamKey[] = [
   { pos: [0.7, 1.35, -0.2], look: [0.3, 0.95, -2.2], fov: 42 },
-  { pos: [-0.7, 1.45, -0.2], look: [-1.5, 1.1, -2.3], fov: 40 },
-  { pos: [1.3, 1.15, 0.5], look: [3.0, 0.7, -1.9], fov: 40 },
-  { pos: [0.7, 1.3, -0.8], look: [0.5, 0.95, -2.1], fov: 38 },
+  { pos: [-0.2, 1.55, 0.5], look: [-1.75, 1.15, -2.3], fov: 40 },
+  { pos: [0.9, 1.45, 0.4], look: [2.9, 0.7, -2.0], fov: 40 },
+  { pos: [0.85, 1.65, -0.45], look: [0.6, 0.85, -2.1], fov: 38 },
 ];
 
 const smooth = (t: number) => t * t * (3 - 2 * t);
@@ -47,16 +47,17 @@ export function resolveCamera(
   let t = 0;
 
   if (id === "studio") {
-    // 투어: 4 정거장을 local 로 지나간다. 정거장에서 잠시 머무는 느낌을 위해 smoothstep.
+    // 투어: local 0~0.8 동안 4 정거장을 지나고, 0.8~0.86 은 마지막 정거장에 머문 뒤 다음 섹션으로 넘어간다.
     const stops = TOUR.length;
-    const seg = local * (stops - 1);
+    const tourEnd = 0.8;
+    const holdEnd = 0.86;
+    const seg = Math.min(1, local / tourEnd) * (stops - 1);
     const k = Math.min(stops - 2, Math.floor(seg));
     a = TOUR[k];
     b = TOUR[k + 1];
-    t = smooth(seg - k);
-    if (local > blendStart && next) {
-      // 마지막 정거장 → 다음 섹션
-      const u = smooth((local - blendStart) / (1 - blendStart));
+    t = smooth(Math.min(1, seg - k));
+    if (local > holdEnd && next) {
+      const u = smooth((local - holdEnd) / (1 - holdEnd));
       vA.set(...TOUR[stops - 1].pos);
       vB.set(...CAMERA[next].pos);
       outPos.copy(vA.lerp(vB, u));

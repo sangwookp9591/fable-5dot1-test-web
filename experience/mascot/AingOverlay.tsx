@@ -17,6 +17,8 @@ export type AingOverlayProps = {
   clipPath?: string;
   line?: string | null;
   hidden?: boolean;
+  /** 앵커 추적 중: 위치 transition 없이 즉시 반영 */
+  instant?: boolean;
   onEnded?: (s: AingState) => void;
 };
 
@@ -30,7 +32,7 @@ type Buffer = 0 | 1;
  * - WebM alpha → HEVC alpha(Safari) → 애니메이션 WebP 순서로 fallback
  * - reduced-motion 이면 정지 포스터만
  */
-export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hidden, onEnded }: AingOverlayProps) {
+export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hidden, instant, onEnded }: AingOverlayProps) {
   const caps = useExperience((s) => s.caps);
   const ext: "webm" | "mov" | null = caps.webmAlpha ? "webm" : caps.hevcAlpha ? "mov" : null;
   const useVideo = ext !== null && !caps.reducedMotion;
@@ -144,7 +146,9 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
         height: frameH,
         width: frameH * (16 / 9),
         transform: `translate3d(calc(${x}vw - 50%), ${-bottom}vh, 0) ${flip ? "scaleX(-1)" : ""}`,
-        transition: `transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out), height var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out)`,
+        transition: instant
+          ? "opacity var(--dur-base) var(--ease-out)"
+          : `transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out), height var(--dur-slow) var(--ease-out), width var(--dur-slow) var(--ease-out)`,
         opacity: hidden ? 0 : 1,
         clipPath,
         willChange: "transform, opacity",
