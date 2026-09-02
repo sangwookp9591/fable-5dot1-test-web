@@ -43,3 +43,6 @@ next-env.d.ts
 # next.js agent rules (generated)
 AGENTS.md
 CLAUDE.md
+
+# playwright mcp output
+.playwright-mcp/
