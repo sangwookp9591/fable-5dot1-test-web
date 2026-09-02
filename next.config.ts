@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "export",
   // 자동 생성 AGENTS.md / CLAUDE.md 는 저장소에 넣지 않는다
   agentRules: false,
   async headers() {
