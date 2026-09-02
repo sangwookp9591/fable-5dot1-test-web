@@ -80,7 +80,9 @@ function CameraRig() {
 
   useFrame((_, dt) => {
     const cam = camera as THREE.PerspectiveCamera;
-    const fov = resolveCamera(SECTIONS, progress.timeline, pos.current, look.current);
+    let fov = resolveCamera(SECTIONS, progress.timeline, pos.current, look.current);
+    // 세로 화면(모바일)은 가로 시야가 좁아지므로 fov 를 넓혀 같은 물건이 화면에 들어오게 한다
+    if (cam.aspect < 1) fov = Math.min(78, fov * (1 + (1 - cam.aspect) * 0.9));
     // 포인터 반응은 아주 작게 (카메라 흔들림 금지)
     if (!reduced && !mobile) {
       look.current.x += progress.pointerX * 0.06;

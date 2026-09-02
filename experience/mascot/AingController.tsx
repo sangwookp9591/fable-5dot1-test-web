@@ -23,7 +23,7 @@ function placementFor(section: SectionId, mobile: boolean, vw: number): Placemen
   const h = mobile ? Math.min(150, vw * 0.36) : Math.min(320, Math.max(220, vw * 0.2));
   if (mobile) {
     // 모바일: 오른쪽 아래 작게. 콘텐츠와 겹치지 않게 bottom 여백
-    return { x: 78, bottom: 2, height: h, hidden: section === "loop" };
+    return { x: 80, bottom: 1.5, height: section === "result" || section === "review" ? h * 0.75 : h, hidden: section === "loop" };
   }
   switch (section) {
     case "intro":
