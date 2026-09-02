@@ -175,7 +175,8 @@ export function AingController() {
     let raf = 0;
     const tick = () => {
       const a = anchors.deskSeat;
-      if (a && a.ok && a.h > 40) {
+      if (a && a.ok && a.h > 90 && (Number.isNaN(a.cut) || a.cut - (a.y - a.h) > a.h * 0.45)) {
+        // 캐릭터가 90px 이상이고, 가림선 위로 최소 45% 는 보일 때만 앵커 사용
         const W = window.innerWidth;
         const H = window.innerHeight;
         const frameH = a.h / 0.805;

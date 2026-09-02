@@ -145,9 +145,6 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   }, [state, useVideo, videoFailed]);
 
   const showVideo = useVideo && !videoFailed;
-  // 가장자리 판정 (flip 이면 컨테이너 좌표가 반전되므로 방향도 반전)
-  const rawEdge: "left" | "center" | "right" = x > 72 ? "right" : x < 28 ? "left" : "center";
-  const edge = flip ? (rawEdge === "right" ? "left" : rawEdge === "left" ? "right" : "center") : rawEdge;
   // 컨테이너 크기는 고정(BASE_H)하고 transform: scale 로만 키운다 → 크기·위치 변화가 layout shift(CLS) 를 만들지 않는다.
   // 프레임 720 중 캐릭터 580 → 프레임 높이 = height / 0.805
   const frameH = height / 0.805;
@@ -156,6 +153,7 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   const clipLocal = clipPath ? clipPath.replace(/inset\(0 0 ([\d.]+)px 0\)/, (_, px) => `inset(0 0 ${(Number(px) / scale).toFixed(1)}px 0)`) : undefined;
 
   return (
+    <>
     <div
       aria-hidden="true"
       className="aing"
@@ -213,24 +211,49 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
             }}
           />
         ))}
-      {line ? (
-        <div
-          className="aing-bubble kr"
-          data-edge={edge}
-          style={{
-            position: "absolute",
-            left: "50%",
-            bottom: "calc(80.5% + 6%)",
-            transformOrigin: `${edge === "right" ? "85%" : edge === "left" ? "15%" : "50%"} 100%`,
-            // 화면 가장자리에 서 있으면 말풍선을 안쪽으로 밀어 잘리지 않게 한다 (flip 이면 좌우가 뒤집히므로 반대로)
-            transform: `translateX(${edge === "right" ? "-85%" : edge === "left" ? "-15%" : "-50%"}) scale(${(1 / scale).toFixed(4)}) ${flip ? "scaleX(-1)" : ""}`,
-          }}
-        >
-          <span key={line} className="aing-bubble-text">
-            {line}
-          </span>
-        </div>
-      ) : null}
+    </div>
+    {line ? <AingBubble key={line} text={line} x={x} bottomVh={bottom} charHeightPx={height} /> : null}
+    </>
+  );
+}
+
+/**
+ * 말풍선. 스케일·반전되는 캐릭터 컨테이너 밖에 두고 뷰포트 좌표로 직접 배치한다.
+ * 화면 밖으로 나가면 안쪽으로 밀고, 꼬리는 캐릭터 머리 위를 계속 가리킨다.
+ */
+function AingBubble({ text, x, bottomVh, charHeightPx }: { text: string; x: number; bottomVh: number; charHeightPx: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [dx, setDx] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      const vw = window.innerWidth;
+      const w = el.offsetWidth;
+      const cx = (x / 100) * vw;
+      const pad = 10;
+      let shift = 0;
+      if (cx - w / 2 < pad) shift = pad - (cx - w / 2);
+      else if (cx + w / 2 > vw - pad) shift = vw - pad - (cx + w / 2);
+      setDx(Math.round(shift));
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [x, text]);
+  return (
+    <div
+      ref={ref}
+      className="aing-bubble kr"
+      style={{
+        position: "absolute",
+        left: `${x}vw`,
+        bottom: `calc(${bottomVh}vh + ${Math.round(charHeightPx + 14)}px)`,
+        transform: `translateX(calc(-50% + ${dx}px))`,
+        ["--tail-x" as string]: `calc(50% - ${dx}px)`,
+      }}
+    >
+      <span className="aing-bubble-text">{text}</span>
     </div>
   );
 }
