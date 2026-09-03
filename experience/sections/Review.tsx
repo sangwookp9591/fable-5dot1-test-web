@@ -44,7 +44,7 @@ export function Review() {
       <div className="col-left kr review-panel">
         <div className="panel">
           <p className="eyebrow">이 사이트 자체 점검</p>
-          <h2 className="h-section">코드를 작성한 뒤 실제 브라우저 환경에서 검증했습니다.</h2>
+          <h2 className="h-section">코드만 보고 끝내지 않고, 실제 브라우저에서 직접 열어보고 확인했습니다.</h2>
           <p className="lead">화면을 직접 열어보고 다양한 기기와 네트워크 환경에서 테스트하며, 어색하거나 지연이 발생하는 부분을 수정했습니다.</p>
           <ul className="review-board">
             {REVIEW_ITEMS.map((r) => (

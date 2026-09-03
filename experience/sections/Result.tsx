@@ -11,7 +11,7 @@ export function Result() {
     <Section id="result" label="마무리">
       <div className="result kr panel">
         <p className="eyebrow">마무리</p>
-        <h2 className="h-display">화면부터 서버, 배포까지 함께 고민하는 개발자입니다.</h2>
+        <h2 className="h-display">문제를 따라가다 보면 화면에서 시작해 서버와 배포까지 보게 됩니다. 그게 제가 일해온 방식입니다.</h2>
         <p className="lead" style={{ margin: "0 0 8px" }}>
           {howIWork.closing[0]} {howIWork.closing[1]}
         </p>
