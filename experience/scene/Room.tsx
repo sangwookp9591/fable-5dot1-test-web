@@ -45,7 +45,7 @@ function useMats() {
 }
 
 /** 월드 좌표를 화면 px 로 투영해 anchors 에 기록 (아잉이 실제 자리에 앉는 데 사용) */
-function Anchor({ id, feet, height, cutY }: { id: string; feet: [number, number, number]; height: number; cutY?: number }) {
+function Anchor({ id, feet, height }: { id: string; feet: [number, number, number]; height: number }) {
   const { camera, size } = useThree();
   const v = useMemo(() => new THREE.Vector3(), []);
   useFrame(() => {
@@ -55,12 +55,10 @@ function Anchor({ id, feet, height, cutY }: { id: string; feet: [number, number,
     };
     const f = toPx(...feet);
     const t = toPx(feet[0], feet[1] + height, feet[2]);
-    const c = cutY !== undefined ? toPx(feet[0], cutY, feet[2]) : null;
-    const a = anchors[id] ?? (anchors[id] = { x: 0, y: 0, h: 0, cut: NaN, ok: false });
+    const a = anchors[id] ?? (anchors[id] = { x: 0, y: 0, h: 0, ok: false });
     a.x = f.x;
     a.y = f.y;
     a.h = Math.max(0, f.y - t.y);
-    a.cut = c ? c.y : NaN;
     a.ok = f.front;
   });
   return null;
@@ -389,9 +387,9 @@ export function Room({ onReady }: { onReady: () => void }) {
         <Model name="pillow" position={[-2.05, 0.4, 0.55]} rotation={[0.4, 2.4, 0]} scale={S} />
         <WallBoard mats={mats} />
         <Poster mats={mats} />
-        {/* 아잉이 책상 뒤에 앉는 자리 (모니터 오른쪽). 책상 윗면(0.78) 아래는 가려진다 */}
-        {/* 앉은 높이 0.68: 책상 윗면(0.78) 아래로는 발·무릎만 가려지고 상반신과 노트북은 보인다 (0.5 로 두면 머리만 남는다) */}
-        <Anchor id="deskSeat" feet={[0.25, 0.7, -2.12]} height={0.52} cutY={0.78} />
+        {/* 아잉이 책상 위에 서는 자리: 책상 앞모서리(z -1.695) 바로 안쪽, 노트북(x -0.05~0.58, z -2.32~-1.72)보다 앞.
+            오버레이는 DOM 이라 3D 에 가려지지 않으므로, 앞에 아무것도 없는 자리에만 세운다. */}
+        <Anchor id="deskSeat" feet={[0.28, 0.769, -1.74]} height={0.52} />
         <Ready onReady={onReady} />
       </Suspense>
       {mobile ? null : null}

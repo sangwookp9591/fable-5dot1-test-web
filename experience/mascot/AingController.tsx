@@ -178,24 +178,22 @@ export function AingController() {
     setState("idle");
   }, []);
 
-  // 책상 뒤 자리: 3D 앵커를 따라 위치·크기·가림선을 매 프레임 갱신 (데스크톱, 3D 살아있을 때만)
+  // 책상 위 자리: 3D 앵커를 따라 위치·크기를 매 프레임 갱신 (데스크톱, 3D 살아있을 때만)
   const useAnchor = section === "loop" && !caps.mobile && !sceneFailed && caps.webgl;
-  const [anch, setAnch] = useState<{ x: number; bottom: number; height: number; clip: number } | null>(null);
+  const [anch, setAnch] = useState<{ x: number; bottom: number; height: number } | null>(null);
   useEffect(() => {
     if (!useAnchor) return;
     let raf = 0;
     const tick = () => {
       const a = anchors.deskSeat;
-      if (a && a.ok && a.h > 90 && (Number.isNaN(a.cut) || a.cut - (a.y - a.h) > a.h * 0.45)) {
-        // 캐릭터가 90px 이상이고, 가림선 위로 최소 45% 는 보일 때만 앵커 사용
+      if (a && a.ok && a.h > 90) {
         const W = window.innerWidth;
         const H = window.innerHeight;
         const frameH = a.h / 0.805;
         const bottomPx = a.y + (frameH * 56) / 720; // 프레임 아래 여백만큼 컨테이너가 더 내려감
-        const clip = Number.isNaN(a.cut) ? 0 : Math.max(0, bottomPx - a.cut);
         setAnch((prev) => {
-          const next = { x: (a.x / W) * 100, bottom: ((H - bottomPx) / H) * 100, height: a.h, clip };
-          return prev && Math.abs(prev.x - next.x) < 0.02 && Math.abs(prev.bottom - next.bottom) < 0.02 && Math.abs(prev.height - next.height) < 0.5 && Math.abs(prev.clip - next.clip) < 0.5 ? prev : next;
+          const next = { x: (a.x / W) * 100, bottom: ((H - bottomPx) / H) * 100, height: a.h };
+          return prev && Math.abs(prev.x - next.x) < 0.02 && Math.abs(prev.bottom - next.bottom) < 0.02 && Math.abs(prev.height - next.height) < 0.5 ? prev : next;
         });
       }
       raf = requestAnimationFrame(tick);
@@ -218,7 +216,6 @@ export function AingController() {
         flip={p.flip}
         line={line}
         hidden={hidden}
-        clipPath={anchored && anch.clip > 0 ? `inset(0 0 ${anch.clip.toFixed(1)}px 0)` : undefined}
         instant={!!anchored}
         onEnded={onEnded}
       />

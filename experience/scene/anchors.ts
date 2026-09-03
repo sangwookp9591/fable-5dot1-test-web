@@ -8,8 +8,6 @@ export type Anchor = {
   y: number;
   /** 월드 height 가 화면에서 차지하는 px */
   h: number;
-  /** 가림 기준선(px): 이 y 아래는 잘라낸다 (책상 윗면 뒤에 앉은 느낌). 없으면 NaN */
-  cut: number;
   ok: boolean;
 };
 

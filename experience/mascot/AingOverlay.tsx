@@ -13,8 +13,6 @@ export type AingOverlayProps = {
   /** 캐릭터 표시 높이(px). 프레임(720) 대비 캐릭터는 약 80% */
   height: number;
   flip?: boolean;
-  /** 책상 뒤 가림 등 depth illusion 용 clip-path */
-  clipPath?: string;
   line?: string | null;
   hidden?: boolean;
   /** 앵커 추적 중: 위치 transition 없이 즉시 반영 */
@@ -55,7 +53,7 @@ const BASE_H = 400;
  * - WebM alpha → HEVC alpha(Safari) → 애니메이션 WebP 순서로 fallback
  * - reduced-motion 이면 정지 포스터만
  */
-export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hidden, instant, onEnded }: AingOverlayProps) {
+export function AingOverlay({ state, x, bottom, height, flip, line, hidden, instant, onEnded }: AingOverlayProps) {
   const caps = useExperience((s) => s.caps);
   const ext: "webm" | "mov" | null = caps.webmAlpha ? "webm" : caps.hevcAlpha ? "mov" : null;
   const useVideo = ext !== null && !caps.reducedMotion;
@@ -199,8 +197,6 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
   // 프레임 720 중 캐릭터 580 → 프레임 높이 = height / 0.805
   const frameH = height / 0.805;
   const scale = frameH / BASE_H;
-  // clip-path 는 컨테이너 로컬(스케일 전) 좌표
-  const clipLocal = clipPath ? clipPath.replace(/inset\(0 0 ([\d.]+)px 0\)/, (_, px) => `inset(0 0 ${(Number(px) / scale).toFixed(1)}px 0)`) : undefined;
 
   return (
     <>
@@ -219,7 +215,6 @@ export function AingOverlay({ state, x, bottom, height, flip, clipPath, line, hi
           ? "opacity var(--dur-base) var(--ease-out)"
           : `transform var(--dur-slow) var(--ease-out), opacity var(--dur-base) var(--ease-out)`,
         opacity: hidden ? 0 : 1,
-        clipPath: clipLocal,
         willChange: "transform, opacity",
         pointerEvents: "none",
       }}
