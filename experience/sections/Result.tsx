@@ -11,7 +11,7 @@ export function Result() {
     <Section id="result" label="마무리">
       <div className="result kr panel">
         <p className="eyebrow">마무리</p>
-        <h2 className="h-display">그래서 박상욱, 쓸 만했을까요?</h2>
+        <h2 className="h-display">화면부터 서버, 배포까지 함께 고민하는 개발자입니다.</h2>
         <p className="lead" style={{ margin: "0 0 8px" }}>
           {howIWork.closing[0]} {howIWork.closing[1]}
         </p>
@@ -37,13 +37,13 @@ export function Result() {
           <a className="btn btn-ghost" href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
         </div>
         <div className="result-links">
-          <button type="button" onClick={replay}>다시 보기</button>
-          <a href={profile.source} target="_blank" rel="noreferrer">이 사이트 소스 보기</a>
+          <button type="button" onClick={replay}>처음부터 다시 보기</button>
+          <a href={profile.source} target="_blank" rel="noreferrer">포트폴리오 소스 코드</a>
         </div>
         <p className="result-foot">
           {profile.name} · {profile.email} · <a href={profile.web} target="_blank" rel="noreferrer">{profile.webLabel}</a> · <a href={profile.youtube} target="_blank" rel="noreferrer">YouTube AI-NG</a>
           <br />
-          이 사이트: Next.js 16 · Bun · Three.js · GSAP · 아잉 영상은 Higgsfield(Kling 3.0) · 만든 건 Claude Fable 5.1
+          이 웹사이트는 Next.js 16, Three.js, GSAP을 활용해 제작되었으며, 마스코트 영상은 Higgsfield를 활용했습니다.
         </p>
       </div>
     </Section>

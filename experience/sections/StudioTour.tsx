@@ -11,7 +11,7 @@ export const TOUR_STOPS = [
     id: "desk",
     label: "책상",
     eyebrow: zivo.userWeb.eyebrow,
-    title: "책상 위 모니터엔 이용자용 웹.",
+    title: zivo.userWeb.title,
     body: zivo.userWeb.body,
     points: zivo.userWeb.points.slice(0, 3),
     link: zivo.userWeb.link,
@@ -35,7 +35,7 @@ export const TOUR_STOPS = [
     body: zivo.backend.body,
     points: zivo.backend.points,
     link: profile.web,
-    linkLabel: "자세한 이야기 보기",
+    linkLabel: "자세한 내용 보기",
   },
   {
     id: "laptop",
@@ -45,7 +45,7 @@ export const TOUR_STOPS = [
     body: yeogigage.body,
     points: yeogigage.points,
     link: profile.web,
-    linkLabel: "자세한 이야기 보기",
+    linkLabel: "자세한 내용 보기",
   },
 ] as const;
 

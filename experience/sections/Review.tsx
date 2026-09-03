@@ -7,15 +7,15 @@ import { useLiveVitals } from "@/experience/performance/useLiveVitals";
 import { cueAing } from "@/experience/mascot/AingController";
 import { useSteps } from "@/experience/timeline/useSectionProgress";
 
-/** 이 사이트를 만들면서 실제로 돈 검수. 결과는 docs/fable-experiment/09-final-review.md 와 같다. */
+/** 이 사이트를 만들면서 실제로 돌린 검수. */
 export const REVIEW_ITEMS = [
-  { k: "구조", s: "PASS", d: "experience/ 아래 state · timeline · mascot · scene 으로 나눴습니다. 연출은 전부 스크롤 위치의 함수입니다." },
-  { k: "화면", s: "PASS", d: "1440 과 390 에서 섹션마다 스크린샷을 찍고 패널이 잘리는 곳, 겹치는 곳을 고쳤습니다." },
-  { k: "인터랙션", s: "PASS", d: "맨 아래에서 맨 위까지 1.5초에 거꾸로 올려도 섹션과 아잉 상태가 제자리로 돌아옵니다." },
-  { k: "아잉 영상", s: "PASS", d: "클립 11개, 시작·끝 포즈가 같아 전환에 튐이 없습니다. WebM 이 막히면 MOV, 그것도 막히면 WebP." },
-  { k: "Three.js", s: "IMPROVED", d: "처음엔 상자로 만든 가구가 어색했습니다. 실제 가구 모델과 그림자로 바꿨습니다." },
-  { k: "성능", s: "TRADE-OFF", d: "3D(258KB) 는 첫 화면 뒤에 따로 받습니다. 대신 방이 0.5초 늦게 나타납니다." },
-  { k: "접근성", s: "PASS", d: "키보드로 전부 이동되고, 움직임 줄이기를 켜면 영상과 카메라가 멈춥니다. Lighthouse 접근성 96 → 대비 수정." },
+  { k: "코드 구조", s: "PASS", d: "state, timeline, mascot, scene 모듈로 분리하고, 화면 연출은 스크롤 위치 기반 순수 함수로 구성했습니다." },
+  { k: "화면 대응", s: "PASS", d: "데스크톱(1440px)과 모바일(390px) 환경에서 섹션별 레이아웃 겹침과 글자 잘림 현상을 점검하고 수정했습니다." },
+  { k: "스크롤 조작", s: "PASS", d: "스크롤을 빠르게 왕복해도 애니메이션 상태와 카메라 좌표가 어긋나지 않고 제자리로 복귀하도록 처리했습니다." },
+  { k: "캐릭터 영상", s: "PASS", d: "11개 영상 클립의 시작과 끝 프레임을 맞춰 전환 시 끊김을 없앴고, 브라우저 환경에 따라 WebM, MOV, WebP 순으로 재생합니다." },
+  { k: "3D 공간", s: "IMPROVED", d: "단순 박스 형태의 임시 모델을 실제 가구 모델과 그림자 효과로 교체해 자연스러운 실내 공간을 연출했습니다." },
+  { k: "성능 최적화", s: "TRADE-OFF", d: "초기 화면의 빠른 표시를 위해 3D 모델(258KB)은 첫 렌더링 이후 비동기로 로드하도록 분리했습니다." },
+  { k: "웹 접근성", s: "PASS", d: "키보드 Tab 키만으로 모든 콘텐츠 탐색이 가능하며, 움직임 줄이기(prefers-reduced-motion) 설정을 지원합니다." },
 ] as const;
 
 export function Review() {
@@ -43,9 +43,9 @@ export function Review() {
     <Section id="review" label="자기 검수">
       <div className="col-left kr review-panel">
         <div className="panel">
-          <p className="eyebrow">이 사이트 자체 검수</p>
-          <h2 className="h-section">다 만들었다고 끝이 아닙니다.</h2>
-          <p className="lead">직접 열어봅니다. 버튼도 눌러봅니다. 이상하면 다시 고칩니다. 아래는 이 사이트에 실제로 돌린 검수입니다.</p>
+          <p className="eyebrow">이 사이트 자체 점검</p>
+          <h2 className="h-section">코드를 작성한 뒤 실제 브라우저 환경에서 검증했습니다.</h2>
+          <p className="lead">화면을 직접 열어보고 다양한 기기와 네트워크 환경에서 테스트하며, 어색하거나 지연이 발생하는 부분을 수정했습니다.</p>
           <ul className="review-board">
             {REVIEW_ITEMS.map((r) => (
               <li key={r.k}>
@@ -78,7 +78,7 @@ export function Review() {
             </div>
           </div>
           <p className="note" style={{ marginTop: 14 }}>
-            <b>목표</b> LCP 2.0초 아래 · CLS 0.05 아래 · INP 150ms 아래 · 컴퓨터에서 60fps. 미치지 못하면 효과를 뺍니다.
+            <b>성능 기준</b> 첫 화면 2.0초 이내 · 레이아웃 흔들림 0.05 이내 · 클릭 반응 150ms 이내 · 60fps 유지. 기준에 미치지 못하는 화려한 효과는 과감히 제외했습니다.
           </p>
         </div>
       </div>

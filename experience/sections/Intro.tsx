@@ -37,7 +37,7 @@ export function Intro() {
         </ul>
         <div className="intro-actions">
           <button type="button" className="btn btn-primary" onClick={onStart} aria-describedby="intro-title">
-            {started ? "계속 보기" : hero.cta} <span aria-hidden="true">↓</span>
+            {started ? "계속 둘러보기" : hero.cta} <span aria-hidden="true">↓</span>
           </button>
           {/* 한 화면에 채움 1 + 외곽 1. ai-ng.co.kr 은 오른쪽 위 연락 바에 있다. */}
           <a className="btn btn-ghost" href={profile.github} target="_blank" rel="noreferrer">

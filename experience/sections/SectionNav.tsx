@@ -36,7 +36,7 @@ export function SectionNav() {
         ))}
       </nav>
       <div className="scroll-hint" style={{ opacity: started && section === "intro" ? 1 : 0 }} aria-hidden="true">
-        <i /> 스크롤해서 둘러보기
+        <i /> 스크롤하여 둘러보기
       </div>
     </>
   );

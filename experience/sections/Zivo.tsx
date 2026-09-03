@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Section } from "./Section";
-import { zivo } from "@/experience/content/portfolio";
+import { zivo, aingLines } from "@/experience/content/portfolio";
 import { useSectionFrame, remap } from "@/experience/timeline/useSectionProgress";
 import { cueAing } from "@/experience/mascot/AingController";
 import { useExperience } from "@/experience/state/experience-store";
@@ -52,7 +52,7 @@ export function Zivo() {
   useEffect(() => {
     if (value > 0.5 && !surprised.current) {
       surprised.current = true;
-      cueAing({ state: "surprise", line: "14개 언어… 이걸 혼자?", section: "zivo" });
+      cueAing({ state: "surprise", line: aingLines.zivo, section: "zivo" });
     }
     if (value < 0.2) surprised.current = false;
   }, [value]);

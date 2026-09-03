@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { useExperience } from "@/experience/state/experience-store";
-import { zivo, quality, career } from "@/experience/content/portfolio";
+import { hero, zivo, quality, career } from "@/experience/content/portfolio";
 
 /**
  * 책상 모니터 화면. DOM 대신 2D canvas 텍스처에 그린다 (섹션이 바뀔 때만 다시 그림).
@@ -74,7 +74,7 @@ export function useScreenTexture(): THREE.CanvasTexture {
     const lines: { t: string; c?: string; w?: number; s?: number }[] = [];
     switch (section) {
       case "intro":
-        lines.push({ t: "박상욱 · Portfolio", w: 800, s: 34 }, { t: "그래서 뭐 만들었냐고요?", w: 600, s: 24, c: "#677084" }, { t: "바로 보여드릴게요.", w: 600, s: 24, c: "#677084" });
+        lines.push({ t: "박상욱 · 포트폴리오", w: 800, s: 34 }, { t: hero.title[0], w: 600, s: 24, c: "#677084" }, { t: hero.title[1], w: 600, s: 24, c: "#677084" });
         break;
       case "career":
         career.items.forEach((c) => lines.push({ t: `${c.years}  ${c.company}`, w: 700, s: 24 }));

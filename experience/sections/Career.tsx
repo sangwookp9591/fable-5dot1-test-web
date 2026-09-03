@@ -40,7 +40,7 @@ export function Career() {
           })}
         </ol>
         <p className="board-scope" aria-live="polite">
-          {step >= 4 ? "화면 → 앱·영상 → API·AWS → 백오피스·서버. 범위가 이렇게 넓어졌습니다." : "스크롤하면 한 줄씩 채워집니다."}
+          {step >= 4 ? "화면 개발에서 시작해 앱, 서버 API, 클라우드 배포와 운영까지 점진적으로 역할을 확장했습니다." : "스크롤하면 연도별 주요 이력을 확인할 수 있습니다."}
         </p>
       </div>
     </Section>
